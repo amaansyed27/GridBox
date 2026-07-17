@@ -1,0 +1,701 @@
+===== CARGO FORMAT =====
+Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-cli/src/main.rs:80:
+     Ok(())
+ }
+ 
+-fn build_services(
+-    jolpica: JolpicaClient,
+-    agent: OllamaAgent,
+-    fastf1: FastF1Client,
+-) -> AppServices {
++fn build_services(jolpica: JolpicaClient, agent: OllamaAgent, fastf1: FastF1Client) -> AppServices {
+     AppServices {
+         jolpica,
+         agent,
+Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-tui/src/ui/help.rs:8:
+ 
+ pub fn render(frame: &mut Frame<'_>, area: Rect) {
+     let commands = [
+-        ("/driver <number>", "Focus a driver in the local demo analysis"),
++        (
++            "/driver <number>",
++            "Focus a driver in the local demo analysis",
++        ),
+         ("/schedule <year>", "Load a Jolpica season schedule"),
+         (
+             "/session <year> <event> <session>",
+EXIT_CODE=1
+
+===== CARGO CHECK =====
+[1m[92m    Updating[0m crates.io index
+[1m[92m Downloading[0m crates ...
+[1m[92m  Downloaded[0m anstyle-query v1.1.5
+[1m[92m  Downloaded[0m anstyle v1.0.14
+[1m[92m  Downloaded[0m anstyle-parse v1.0.0
+[1m[92m  Downloaded[0m anstream v1.0.0
+[1m[92m  Downloaded[0m allocator-api2 v0.2.21
+[1m[92m  Downloaded[0m clap_lex v1.1.0
+[1m[92m  Downloaded[0m cpufeatures v0.3.0
+[1m[92m  Downloaded[0m cfg_aliases v0.2.2
+[1m[92m  Downloaded[0m colorchoice v1.0.5
+[1m[92m  Downloaded[0m scopeguard v1.2.0
+[1m[92m  Downloaded[0m darling_macro v0.23.0
+[1m[92m  Downloaded[0m dirs-sys v0.5.0
+[1m[92m  Downloaded[0m heck v0.5.0
+[1m[92m  Downloaded[0m form_urlencoded v1.2.2
+[1m[92m  Downloaded[0m ident_case v1.0.1
+[1m[92m  Downloaded[0m instability v0.3.12
+[1m[92m  Downloaded[0m futures-task v0.3.32
+[1m[92m  Downloaded[0m http-body v1.1.0
+[1m[92m  Downloaded[0m percent-encoding v2.3.2
+[1m[92m  Downloaded[0m atomic-waker v1.1.2
+[1m[92m  Downloaded[0m castaway v0.2.4
+[1m[92m  Downloaded[0m rand_core v0.10.1
+[1m[92m  Downloaded[0m serde v1.0.228
+[1m[92m  Downloaded[0m lru v0.12.5
+[1m[92m  Downloaded[0m lru-slab v0.1.2
+[1m[92m  Downloaded[0m potential_utf v0.1.5
+[1m[92m  Downloaded[0m matchers v0.2.0
+[1m[92m  Downloaded[0m equivalent v1.0.2
+[1m[92m  Downloaded[0m ryu v1.0.23
+[1m[92m  Downloaded[0m serde_core v1.0.228
+[1m[92m  Downloaded[0m lazy_static v1.5.0
+[1m[92m  Downloaded[0m futures-core v0.3.32
+[1m[92m  Downloaded[0m cfg-if v1.0.4
+[1m[92m  Downloaded[0m rand_pcg v0.10.2
+[1m[92m  Downloaded[0m is_terminal_polyfill v1.70.2
+[1m[92m  Downloaded[0m option-ext v0.2.0
+[1m[92m  Downloaded[0m errno v0.3.14
+[1m[92m  Downloaded[0m directories v6.0.0
+[1m[92m  Downloaded[0m serde_spanned v0.6.9
+[1m[92m  Downloaded[0m subtle v2.6.1
+[1m[92m  Downloaded[0m hyper-rustls v0.27.9
+[1m[92m  Downloaded[0m thread_local v1.1.10
+[1m[92m  Downloaded[0m sync_wrapper v1.0.2
+[1m[92m  Downloaded[0m idna_adapter v1.2.2
+[1m[92m  Downloaded[0m itoa v1.0.18
+[1m[92m  Downloaded[0m lock_api v0.4.14
+[1m[92m  Downloaded[0m quinn-udp v0.5.15
+[1m[92m  Downloaded[0m either v1.16.0
+[1m[92m  Downloaded[0m indoc v2.0.7
+[1m[92m  Downloaded[0m quote v1.0.46
+[1m[92m  Downloaded[0m pin-project-lite v0.2.17
+[1m[92m  Downloaded[0m displaydoc v0.2.6
+[1m[92m  Downloaded[0m clap_derive v4.6.1
+[1m[92m  Downloaded[0m http-body-util v0.1.4
+[1m[92m  Downloaded[0m find-msvc-tools v0.1.9
+[1m[92m  Downloaded[0m foldhash v0.1.5
+[1m[92m  Downloaded[0m serde_urlencoded v0.7.1
+[1m[92m  Downloaded[0m cassowary v0.3.0
+[1m[92m  Downloaded[0m signal-hook-mio v0.2.5
+[1m[92m  Downloaded[0m stable_deref_trait v1.2.1
+[1m[92m  Downloaded[0m strum v0.26.3
+[1m[92m  Downloaded[0m autocfg v1.5.1
+[1m[92m  Downloaded[0m chacha20 v0.10.1
+[1m[92m  Downloaded[0m ipnet v2.12.0
+[1m[92m  Downloaded[0m darling v0.23.0
+[1m[92m  Downloaded[0m litemap v0.8.2
+[1m[92m  Downloaded[0m futures-channel v0.3.32
+[1m[92m  Downloaded[0m iana-time-zone v0.1.65
+[1m[92m  Downloaded[0m httparse v1.10.1
+[1m[92m  Downloaded[0m once_cell v1.21.4
+[1m[92m  Downloaded[0m parking_lot_core v0.9.12
+[1m[92m  Downloaded[0m anyhow v1.0.103
+[1m[92m  Downloaded[0m parking_lot v0.12.5
+[1m[92m  Downloaded[0m paste v1.0.15
+[1m[92m  Downloaded[0m nu-ansi-term v0.50.3
+[1m[92m  Downloaded[0m icu_provider v2.2.0
+[1m[92m  Downloaded[0m num-traits v0.2.19
+[1m[92m  Downloaded[0m log v0.4.33
+[1m[92m  Downloaded[0m icu_properties v2.2.0
+[1m[92m  Downloaded[0m tinyvec_macros v0.1.1
+[1m[92m  Downloaded[0m want v0.3.1
+[1m[92m  Downloaded[0m getrandom v0.4.3
+[1m[92m  Downloaded[0m tokio-macros v2.7.0
+[1m[92m  Downloaded[0m tower-layer v0.3.3
+[1m[92m  Downloaded[0m tower-service v0.3.3
+[1m[92m  Downloaded[0m untrusted v0.9.0
+[1m[92m  Downloaded[0m unicode-truncate v1.1.0
+[1m[92m  Downloaded[0m utf8parse v0.2.2
+[1m[92m  Downloaded[0m zerofrom-derive v0.1.7
+[1m[92m  Downloaded[0m bitflags v2.13.1
+[1m[92m  Downloaded[0m darling_core v0.23.0
+[1m[92m  Downloaded[0m getrandom v0.2.17
+[1m[92m  Downloaded[0m proc-macro2 v1.0.106
+[1m[92m  Downloaded[0m clap v4.6.2
+[1m[92m  Downloaded[0m toml_write v0.1.2
+[1m[92m  Downloaded[0m base64 v0.22.1
+[1m[92m  Downloaded[0m icu_locale_core v2.2.0
+[1m[92m  Downloaded[0m icu_normalizer v2.2.0
+[1m[92m  Downloaded[0m icu_normalizer_data v2.2.0
+[1m[92m  Downloaded[0m bytes v1.12.1
+[1m[92m  Downloaded[0m compact_str v0.8.2
+[1m[92m  Downloaded[0m quinn v0.11.11
+[1m[92m  Downloaded[0m memchr v2.8.3
+[1m[92m  Downloaded[0m try-lock v0.2.5
+[1m[92m  Downloaded[0m yoke-derive v0.8.2
+[1m[92m  Downloaded[0m rustc-hash v2.1.3
+[1m[92m  Downloaded[0m zerofrom v0.1.8
+[1m[92m  Downloaded[0m utf8_iter v1.0.4
+[1m[92m  Downloaded[0m strsim v0.11.1
+[1m[92m  Downloaded[0m indexmap v2.14.0
+[1m[92m  Downloaded[0m cc v1.2.67
+[1m[92m  Downloaded[0m http v1.4.2
+[1m[92m  Downloaded[0m icu_collections v2.2.0
+[1m[92m  Downloaded[0m rand v0.10.2
+[1m[92m  Downloaded[0m aho-corasick v1.1.4
+[1m[92m  Downloaded[0m hyper-util v0.1.20
+[1m[92m  Downloaded[0m mio v1.2.2
+[1m[92m  Downloaded[0m crossterm v0.28.1
+[1m[92m  Downloaded[0m itertools v0.13.0
+[1m[92m  Downloaded[0m idna v1.1.0
+[1m[92m  Downloaded[0m hashbrown v0.15.5
+[1m[92m  Downloaded[0m hashbrown v0.17.1
+[1m[92m  Downloaded[0m reqwest v0.12.28
+[1m[92m  Downloaded[0m futures-util v0.3.32
+[1m[92m  Downloaded[0m hyper v1.10.1
+[1m[92m  Downloaded[0m icu_properties_data v2.2.0
+[1m[92m  Downloaded[0m clap_builder v4.6.2
+[1m[92m  Downloaded[0m chrono v0.4.45
+[1m[92m  Downloaded[0m quinn-proto v0.11.16
+[1m[92m  Downloaded[0m slab v0.4.12
+[1m[92m  Downloaded[0m static_assertions v1.1.0
+[1m[92m  Downloaded[0m zmij v1.0.23
+[1m[92m  Downloaded[0m shlex v2.0.1
+[1m[92m  Downloaded[0m synstructure v0.13.2
+[1m[92m  Downloaded[0m strum_macros v0.26.4
+[1m[92m  Downloaded[0m thiserror v2.0.18
+[1m[92m  Downloaded[0m thiserror-impl v2.0.18
+[1m[92m  Downloaded[0m tinystr v0.8.3
+[1m[92m  Downloaded[0m toml_datetime v0.6.11
+[1m[92m  Downloaded[0m tracing-log v0.2.0
+[1m[92m  Downloaded[0m writeable v0.6.3
+[1m[92m  Downloaded[0m zerovec-derive v0.11.3
+[1m[92m  Downloaded[0m rustversion v1.0.23
+[1m[92m  Downloaded[0m signal-hook-registry v1.4.8
+[1m[92m  Downloaded[0m libc v0.2.186
+[1m[92m  Downloaded[0m zeroize v1.9.0
+[1m[92m  Downloaded[0m rustls-pki-types v1.15.0
+[1m[92m  Downloaded[0m toml v0.8.23
+[1m[92m  Downloaded[0m yoke v0.8.3
+[1m[92m  Downloaded[0m tokio-rustls v0.26.4
+[1m[92m  Downloaded[0m ring v0.17.14
+[1m[92m  Downloaded[0m linux-raw-sys v0.4.15
+[1m[92m  Downloaded[0m signal-hook v0.3.18
+[1m[92m  Downloaded[0m tracing-attributes v0.1.31
+[1m[92m  Downloaded[0m sharded-slab v0.1.7
+[1m[92m  Downloaded[0m smallvec v1.15.2
+[1m[92m  Downloaded[0m tinyvec v1.12.0
+[1m[92m  Downloaded[0m tracing-core v0.1.36
+[1m[92m  Downloaded[0m unicode-ident v1.0.24
+[1m[92m  Downloaded[0m toml_edit v0.22.27
+[1m[92m  Downloaded[0m serde_derive v1.0.228
+[1m[92m  Downloaded[0m socket2 v0.6.5
+[1m[92m  Downloaded[0m rustls-webpki v0.103.13
+[1m[92m  Downloaded[0m url v2.5.8
+[1m[92m  Downloaded[0m zerotrie v0.2.4
+[1m[92m  Downloaded[0m unicode-segmentation v1.13.3
+[1m[92m  Downloaded[0m tower v0.5.3
+[1m[92m  Downloaded[0m zerovec v0.11.6
+[1m[92m  Downloaded[0m serde_json v1.0.150
+[1m[92m  Downloaded[0m tower-http v0.6.11
+[1m[92m  Downloaded[0m tracing-subscriber v0.3.23
+[1m[92m  Downloaded[0m webpki-roots v1.0.8
+[1m[92m  Downloaded[0m winnow v0.7.15
+[1m[92m  Downloaded[0m unicode-width v0.1.14
+[1m[92m  Downloaded[0m unicode-width v0.2.0
+[1m[92m  Downloaded[0m syn v2.0.119
+[1m[92m  Downloaded[0m regex-syntax v0.8.11
+[1m[92m  Downloaded[0m rustix v0.38.44
+[1m[92m  Downloaded[0m rustls v0.23.42
+[1m[92m  Downloaded[0m tracing v0.1.44
+[1m[92m  Downloaded[0m ratatui v0.29.0
+[1m[92m  Downloaded[0m regex-automata v0.4.16
+[1m[92m  Downloaded[0m tokio v1.52.4
+[1m[92m   Compiling[0m proc-macro2 v1.0.106
+[1m[92m   Compiling[0m quote v1.0.46
+[1m[92m   Compiling[0m unicode-ident v1.0.24
+[1m[92m   Compiling[0m libc v0.2.186
+[1m[92m    Checking[0m cfg-if v1.0.4
+[1m[92m    Checking[0m itoa v1.0.18
+[1m[92m    Checking[0m smallvec v1.15.2
+[1m[92m   Compiling[0m serde_core v1.0.228
+[1m[92m   Compiling[0m serde v1.0.228
+[1m[92m    Checking[0m log v0.4.33
+[1m[92m   Compiling[0m parking_lot_core v0.9.12
+[1m[92m    Checking[0m stable_deref_trait v1.2.1
+[1m[92m   Compiling[0m syn v2.0.119
+[1m[92m    Checking[0m scopeguard v1.2.0
+[1m[92m    Checking[0m pin-project-lite v0.2.17
+[1m[92m    Checking[0m lock_api v0.4.14
+[1m[92m    Checking[0m errno v0.3.14
+[1m[92m    Checking[0m signal-hook-registry v1.4.8
+[1m[92m    Checking[0m mio v1.2.2
+[1m[92m    Checking[0m bytes v1.12.1
+[1m[92m    Checking[0m parking_lot v0.12.5
+[1m[92m   Compiling[0m zmij v1.0.23
+[1m[92m   Compiling[0m serde_json v1.0.150
+[1m[92m    Checking[0m socket2 v0.6.5
+[1m[92m    Checking[0m futures-core v0.3.32
+[1m[92m   Compiling[0m shlex v2.0.1
+[1m[92m    Checking[0m memchr v2.8.3
+[1m[92m   Compiling[0m find-msvc-tools v0.1.9
+[1m[92m   Compiling[0m autocfg v1.5.1
+[1m[92m   Compiling[0m cc v1.2.67
+[1m[92m   Compiling[0m num-traits v0.2.19
+[1m[92m    Checking[0m litemap v0.8.2
+[1m[92m    Checking[0m writeable v0.6.3
+[1m[92m    Checking[0m once_cell v1.21.4
+[1m[92m   Compiling[0m icu_properties_data v2.2.0
+[1m[92m    Checking[0m utf8_iter v1.0.4
+[1m[92m   Compiling[0m icu_normalizer_data v2.2.0
+[1m[92m    Checking[0m http v1.4.2
+[1m[92m   Compiling[0m ring v0.17.14
+[1m[92m    Checking[0m iana-time-zone v0.1.65
+[1m[92m    Checking[0m percent-encoding v2.3.2
+[1m[92m    Checking[0m zeroize v1.9.0
+[1m[92m    Checking[0m http-body v1.1.0
+[1m[92m    Checking[0m rustls-pki-types v1.15.0
+[1m[92m    Checking[0m tracing-core v0.1.36
+[1m[92m    Checking[0m getrandom v0.2.17
+[1m[92m    Checking[0m futures-task v0.3.32
+[1m[92m   Compiling[0m httparse v1.10.1
+[1m[92m    Checking[0m slab v0.4.12
+[1m[92m    Checking[0m untrusted v0.9.0
+[1m[92m   Compiling[0m synstructure v0.13.2
+[1m[92m    Checking[0m futures-util v0.3.32
+[1m[92m    Checking[0m try-lock v0.2.5
+[1m[92m   Compiling[0m rustls v0.23.42
+[1m[92m    Checking[0m tower-service v0.3.3
+[1m[92m    Checking[0m bitflags v2.13.1
+[1m[92m    Checking[0m want v0.3.1
+[1m[92m    Checking[0m form_urlencoded v1.2.2
+[1m[92m    Checking[0m futures-channel v0.3.32
+[1m[92m    Checking[0m atomic-waker v1.1.2
+[1m[92m    Checking[0m subtle v2.6.1
+[1m[92m    Checking[0m equivalent v1.0.2
+[1m[92m    Checking[0m ryu v1.0.23
+[1m[92m   Compiling[0m zerofrom-derive v0.1.7
+[1m[92m   Compiling[0m serde_derive v1.0.228
+[1m[92m   Compiling[0m yoke-derive v0.8.2
+[1m[92m    Checking[0m zerofrom v0.1.8
+[1m[92m   Compiling[0m zerovec-derive v0.11.3
+[1m[92m    Checking[0m yoke v0.8.3
+[1m[92m   Compiling[0m displaydoc v0.2.6
+[1m[92m   Compiling[0m tokio-macros v2.7.0
+[1m[92m    Checking[0m zerovec v0.11.6
+[1m[92m    Checking[0m tokio v1.52.4
+[1m[92m    Checking[0m tinystr v0.8.3
+[1m[92m    Checking[0m icu_locale_core v2.2.0
+[1m[92m    Checking[0m potential_utf v0.1.5
+[1m[92m    Checking[0m zerotrie v0.2.4
+[1m[92m    Checking[0m icu_collections v2.2.0
+[1m[92m    Checking[0m icu_provider v2.2.0
+[1m[92m    Checking[0m chrono v0.4.45
+[1m[92m    Checking[0m icu_properties v2.2.0
+[1m[92m    Checking[0m icu_normalizer v2.2.0
+[1m[92m   Compiling[0m tracing-attributes v0.1.31
+[1m[92m    Checking[0m idna_adapter v1.2.2
+[1m[92m    Checking[0m gridbox-models v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-models)
+[1m[92m    Checking[0m idna v1.1.0
+[1m[92m    Checking[0m tracing v0.1.44
+[1m[92m    Checking[0m sync_wrapper v1.0.2
+[1m[92m    Checking[0m base64 v0.22.1
+[1m[92m    Checking[0m tower-layer v0.3.3
+[1m[92m   Compiling[0m rustversion v1.0.23
+[1m[92m    Checking[0m ipnet v2.12.0
+[1m[92m    Checking[0m url v2.5.8
+[1m[92m    Checking[0m webpki-roots v1.0.8
+[1m[92m   Compiling[0m anyhow v1.0.103
+[1m[92m   Compiling[0m thiserror v2.0.18
+[1m[92m    Checking[0m hyper v1.10.1
+[1m[92m    Checking[0m tower v0.5.3
+[1m[92m    Checking[0m serde_urlencoded v0.7.1
+[1m[92m   Compiling[0m thiserror-impl v2.0.18
+[1m[92m    Checking[0m tower-http v0.6.11
+[1m[92m    Checking[0m hyper-util v0.1.20
+[1m[92m    Checking[0m http-body-util v0.1.4
+[1m[92m    Checking[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m ident_case v1.0.1
+[1m[92m   Compiling[0m strsim v0.11.1
+[1m[92m   Compiling[0m signal-hook v0.3.18
+[1m[92m   Compiling[0m heck v0.5.0
+[1m[92m    Checking[0m indexmap v2.14.0
+[1m[92m   Compiling[0m darling_core v0.23.0
+[1m[92m    Checking[0m toml_datetime v0.6.11
+[1m[92m    Checking[0m serde_spanned v0.6.9
+[1m[92m    Checking[0m option-ext v0.2.0
+[1m[92m    Checking[0m winnow v0.7.15
+[1m[92m   Compiling[0m rustix v0.38.44
+[1m[92m    Checking[0m rustls-webpki v0.103.13
+[1m[92m    Checking[0m toml_write v0.1.2
+[1m[92m    Checking[0m dirs-sys v0.5.0
+[1m[92m    Checking[0m foldhash v0.1.5
+[1m[92m   Compiling[0m paste v1.0.15
+[1m[92m   Compiling[0m instability v0.3.12
+[1m[92m    Checking[0m linux-raw-sys v0.4.15
+[1m[92m    Checking[0m allocator-api2 v0.2.21
+[1m[92m    Checking[0m toml_edit v0.22.27
+[1m[92m    Checking[0m either v1.16.0
+[1m[92m    Checking[0m itertools v0.13.0
+[1m[92m   Compiling[0m darling_macro v0.23.0
+[1m[92m   Compiling[0m darling v0.23.0
+[1m[92m    Checking[0m hashbrown v0.15.5
+[1m[92m    Checking[0m toml v0.8.23
+[1m[92m    Checking[0m tokio-rustls v0.26.4
+[1m[92m    Checking[0m signal-hook-mio v0.2.5
+[1m[92m    Checking[0m directories v6.0.0
+[1m[92m   Compiling[0m strum_macros v0.26.4
+[1m[92m    Checking[0m castaway v0.2.4
+[1m[92m    Checking[0m utf8parse v0.2.2
+[1m[92m    Checking[0m hyper-rustls v0.27.9
+[1m[92m   Compiling[0m indoc v2.0.7
+[1m[92m    Checking[0m reqwest v0.12.28
+[1m[92m    Checking[0m unicode-width v0.1.14
+[1m[92m    Checking[0m static_assertions v1.1.0
+[1m[92m    Checking[0m unicode-segmentation v1.13.3
+[1m[92m    Checking[0m compact_str v0.8.2
+[1m[92m    Checking[0m unicode-truncate v1.1.0
+[1m[92m    Checking[0m crossterm v0.28.1
+[1m[92m    Checking[0m anstyle-parse v1.0.0
+[1m[92m    Checking[0m lru v0.12.5
+[1m[92m    Checking[0m cassowary v0.3.0
+[1m[92m    Checking[0m unicode-width v0.2.0
+[1m[92m    Checking[0m is_terminal_polyfill v1.70.2
+[1m[92m    Checking[0m regex-syntax v0.8.11
+[1m[92m    Checking[0m anstyle v1.0.14
+[1m[92m    Checking[0m anstyle-query v1.1.5
+[1m[92m    Checking[0m colorchoice v1.0.5
+[1m[92m    Checking[0m gridbox-jolpica v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-jolpica)
+[1m[92m    Checking[0m strum v0.26.3
+[1m[92m    Checking[0m anstream v1.0.0
+[1m[92m    Checking[0m ratatui v0.29.0
+[1m[92m    Checking[0m gridbox-agent v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-agent)
+[1m[92m    Checking[0m gridbox-storage v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-storage)
+[1m[91merror[E0432][0m[1m: unresolved import `config::OpenF1Config`[0m
+ [1m[94m--> [0mcrates/gridbox-storage/src/lib.rs:5:51
+  [1m[94m|[0m
+[1m[94m5[0m [1m[94m|[0m pub use config::{Config, FastF1Config, LlmConfig, OpenF1Config, UiConfig};
+  [1m[94m|[0m                                                   [1m[91m^^^^^^^^^^^^[0m [1m[91mno `OpenF1Config` in `config`[0m
+  [1m[94m|[0m
+[1m[96mhelp[0m: a similar name exists in the module
+  [1m[94m|[0m
+[1m[94m5[0m [91m- [0mpub use config::{Config, FastF1Config, LlmConfig, [91mOpenF1Config[0m, UiConfig};
+[1m[94m5[0m [92m+ [0mpub use config::{Config, FastF1Config, LlmConfig, [92mFastF1Config[0m, UiConfig};
+  [1m[94m|[0m
+
+[1mFor more information about this error, try `rustc --explain E0432`.[0m
+[1m[91merror[0m: could not compile `gridbox-storage` (lib) due to 1 previous error
+[1m[33mwarning[0m: build failed, waiting for other jobs to finish...
+EXIT_CODE=101
+
+===== CARGO CLIPPY =====
+[1m[92m    Checking[0m gridbox-models v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-models)
+[1m[92m    Checking[0m regex-automata v0.4.16
+[1m[92m    Checking[0m gridbox-fastf1-client v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-fastf1-client)
+[1m[92m    Checking[0m strsim v0.11.1
+[1m[92m    Checking[0m clap_lex v1.1.0
+[1m[92m    Checking[0m lazy_static v1.5.0
+[1m[92m    Checking[0m clap_builder v4.6.2
+[1m[92m    Checking[0m sharded-slab v0.1.7
+[1m[92m    Checking[0m gridbox-agent v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-agent)
+[1m[92m    Checking[0m gridbox-jolpica v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-jolpica)
+[1m[92m    Checking[0m gridbox-storage v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-storage)
+[1m[91merror[E0432][0m[1m: unresolved import `config::OpenF1Config`[0m
+ [1m[94m--> [0mcrates/gridbox-storage/src/lib.rs:5:51
+  [1m[94m|[0m
+[1m[94m5[0m [1m[94m|[0m pub use config::{Config, FastF1Config, LlmConfig, OpenF1Config, UiConfig};
+  [1m[94m|[0m                                                   [1m[91m^^^^^^^^^^^^[0m [1m[91mno `OpenF1Config` in `config`[0m
+  [1m[94m|[0m
+[1m[96mhelp[0m: a similar name exists in the module
+  [1m[94m|[0m
+[1m[94m5[0m [91m- [0mpub use config::{Config, FastF1Config, LlmConfig, [91mOpenF1Config[0m, UiConfig};
+[1m[94m5[0m [92m+ [0mpub use config::{Config, FastF1Config, LlmConfig, [92mFastF1Config[0m, UiConfig};
+  [1m[94m|[0m
+
+[1mFor more information about this error, try `rustc --explain E0432`.[0m
+[1m[91merror[0m: could not compile `gridbox-storage` (lib) due to 1 previous error
+[1m[33mwarning[0m: build failed, waiting for other jobs to finish...
+EXIT_CODE=101
+
+===== CARGO TEST =====
+[1m[92m   Compiling[0m itoa v1.0.18
+[1m[92m   Compiling[0m libc v0.2.186
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m serde_core v1.0.228
+[1m[92m   Compiling[0m smallvec v1.15.2
+[1m[92m   Compiling[0m log v0.4.33
+[1m[92m   Compiling[0m zerofrom v0.1.8
+[1m[92m   Compiling[0m scopeguard v1.2.0
+[1m[92m   Compiling[0m stable_deref_trait v1.2.1
+[1m[92m   Compiling[0m pin-project-lite v0.2.17
+[1m[92m   Compiling[0m yoke v0.8.3
+[1m[92m   Compiling[0m lock_api v0.4.14
+[1m[92m   Compiling[0m zmij v1.0.23
+[1m[92m   Compiling[0m memchr v2.8.3
+[1m[92m   Compiling[0m bytes v1.12.1
+[1m[92m   Compiling[0m errno v0.3.14
+[1m[92m   Compiling[0m signal-hook-registry v1.4.8
+[1m[92m   Compiling[0m parking_lot_core v0.9.12
+[1m[92m   Compiling[0m mio v1.2.2
+[1m[92m   Compiling[0m parking_lot v0.12.5
+[1m[92m   Compiling[0m zerovec v0.11.6
+[1m[92m   Compiling[0m socket2 v0.6.5
+[1m[92m   Compiling[0m num-traits v0.2.19
+[1m[92m   Compiling[0m iana-time-zone v0.1.65
+[1m[92m   Compiling[0m serde v1.0.228
+[1m[92m   Compiling[0m serde_json v1.0.150
+[1m[92m   Compiling[0m tokio v1.52.4
+[1m[92m   Compiling[0m futures-core v0.3.32
+[1m[92m   Compiling[0m tinystr v0.8.3
+[1m[92m   Compiling[0m litemap v0.8.2
+[1m[92m   Compiling[0m chrono v0.4.45
+[1m[92m   Compiling[0m writeable v0.6.3
+[1m[92m   Compiling[0m once_cell v1.21.4
+[1m[92m   Compiling[0m icu_locale_core v2.2.0
+[1m[92m   Compiling[0m potential_utf v0.1.5
+[1m[92m   Compiling[0m zerotrie v0.2.4
+[1m[92m   Compiling[0m utf8_iter v1.0.4
+[1m[92m   Compiling[0m icu_collections v2.2.0
+[1m[92m   Compiling[0m icu_provider v2.2.0
+[1m[92m   Compiling[0m gridbox-models v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-models)
+[1m[92m   Compiling[0m http v1.4.2
+[1m[92m   Compiling[0m zeroize v1.9.0
+[1m[92m   Compiling[0m percent-encoding v2.3.2
+[1m[92m   Compiling[0m rustls-pki-types v1.15.0
+[1m[92m   Compiling[0m icu_normalizer_data v2.2.0
+[1m[92m   Compiling[0m icu_properties_data v2.2.0
+[1m[92m   Compiling[0m tracing-core v0.1.36
+[1m[92m   Compiling[0m http-body v1.1.0
+[1m[92m   Compiling[0m getrandom v0.2.17
+[1m[92m   Compiling[0m futures-task v0.3.32
+[1m[92m   Compiling[0m slab v0.4.12
+[1m[92m   Compiling[0m untrusted v0.9.0
+[1m[92m   Compiling[0m ring v0.17.14
+[1m[92m   Compiling[0m futures-util v0.3.32
+[1m[92m   Compiling[0m icu_properties v2.2.0
+[1m[92m   Compiling[0m icu_normalizer v2.2.0
+[1m[92m   Compiling[0m bitflags v2.13.1
+[1m[92m   Compiling[0m try-lock v0.2.5
+[1m[92m   Compiling[0m tower-service v0.3.3
+[1m[92m   Compiling[0m want v0.3.1
+[1m[92m   Compiling[0m tracing v0.1.44
+[1m[92m   Compiling[0m idna_adapter v1.2.2
+[1m[92m   Compiling[0m rustls-webpki v0.103.13
+[1m[92m   Compiling[0m httparse v1.10.1
+[1m[92m   Compiling[0m form_urlencoded v1.2.2
+[1m[92m   Compiling[0m futures-channel v0.3.32
+[1m[92m   Compiling[0m ryu v1.0.23
+[1m[92m   Compiling[0m subtle v2.6.1
+[1m[92m   Compiling[0m atomic-waker v1.1.2
+[1m[92m   Compiling[0m rustls v0.23.42
+[1m[92m   Compiling[0m hyper v1.10.1
+[1m[92m   Compiling[0m idna v1.1.0
+[1m[92m   Compiling[0m sync_wrapper v1.0.2
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m base64 v0.22.1
+[1m[92m   Compiling[0m ipnet v2.12.0
+[1m[92m   Compiling[0m tower-layer v0.3.3
+[1m[92m   Compiling[0m hyper-util v0.1.20
+[1m[92m   Compiling[0m tower v0.5.3
+[1m[92m   Compiling[0m url v2.5.8
+[1m[92m   Compiling[0m webpki-roots v1.0.8
+[1m[92m   Compiling[0m serde_urlencoded v0.7.1
+[1m[92m   Compiling[0m tower-http v0.6.11
+[1m[92m   Compiling[0m http-body-util v0.1.4
+[1m[92m   Compiling[0m strsim v0.11.1
+[1m[92m   Compiling[0m thiserror v2.0.18
+[1m[92m   Compiling[0m anyhow v1.0.103
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m toml_datetime v0.6.11
+[1m[92m   Compiling[0m tokio-rustls v0.26.4
+[1m[92m   Compiling[0m serde_spanned v0.6.9
+[1m[92m   Compiling[0m toml_write v0.1.2
+[1m[92m   Compiling[0m hyper-rustls v0.27.9
+[1m[92m   Compiling[0m option-ext v0.2.0
+[1m[92m   Compiling[0m reqwest v0.12.28
+[1m[92m   Compiling[0m indexmap v2.14.0
+[1m[92m   Compiling[0m winnow v0.7.15
+[1m[92m   Compiling[0m darling_core v0.23.0
+[1m[92m   Compiling[0m toml_edit v0.22.27
+[1m[92m   Compiling[0m dirs-sys v0.5.0
+[1m[92m   Compiling[0m signal-hook v0.3.18
+[1m[92m   Compiling[0m darling_macro v0.23.0
+[1m[92m   Compiling[0m toml v0.8.23
+[1m[92m   Compiling[0m directories v6.0.0
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m allocator-api2 v0.2.21
+[1m[92m   Compiling[0m linux-raw-sys v0.4.15
+[1m[92m   Compiling[0m either v1.16.0
+[1m[92m   Compiling[0m rustix v0.38.44
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m itertools v0.13.0
+[1m[92m   Compiling[0m darling v0.23.0
+[1m[92m   Compiling[0m signal-hook-mio v0.2.5
+[1m[92m   Compiling[0m castaway v0.2.4
+[1m[92m   Compiling[0m static_assertions v1.1.0
+[1m[92m   Compiling[0m unicode-width v0.1.14
+[1m[92m   Compiling[0m unicode-segmentation v1.13.3
+[1m[92m   Compiling[0m compact_str v0.8.2
+[1m[92m   Compiling[0m instability v0.3.12
+[1m[92m   Compiling[0m unicode-truncate v1.1.0
+[1m[92m   Compiling[0m strum v0.26.3
+[1m[92m   Compiling[0m crossterm v0.28.1
+[1m[92m   Compiling[0m lru v0.12.5
+[1m[92m   Compiling[0m gridbox-storage v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-storage)
+[1m[92m   Compiling[0m gridbox-jolpica v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-jolpica)
+[1m[91merror[E0432][0m[1m: unresolved import `config::OpenF1Config`[0m
+ [1m[94m--> [0mcrates/gridbox-storage/src/lib.rs:5:51
+  [1m[94m|[0m
+[1m[94m5[0m [1m[94m|[0m pub use config::{Config, FastF1Config, LlmConfig, OpenF1Config, UiConfig};
+  [1m[94m|[0m                                                   [1m[91m^^^^^^^^^^^^[0m [1m[91mno `OpenF1Config` in `config`[0m
+  [1m[94m|[0m
+[1m[96mhelp[0m: a similar name exists in the module
+  [1m[94m|[0m
+[1m[94m5[0m [91m- [0mpub use config::{Config, FastF1Config, LlmConfig, [91mOpenF1Config[0m, UiConfig};
+[1m[94m5[0m [92m+ [0mpub use config::{Config, FastF1Config, LlmConfig, [92mFastF1Config[0m, UiConfig};
+  [1m[94m|[0m
+
+[1m[92m   Compiling[0m gridbox-agent v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-agent)
+[1mFor more information about this error, try `rustc --explain E0432`.[0m
+[1m[91merror[0m: could not compile `gridbox-storage` (lib) due to 1 previous error
+[1m[33mwarning[0m: build failed, waiting for other jobs to finish...
+EXIT_CODE=101
+
+===== CLI HELP =====
+[1m[92m   Compiling[0m utf8parse v0.2.2
+[1m[92m   Compiling[0m anstyle-query v1.1.5
+[1m[92m   Compiling[0m is_terminal_polyfill v1.70.2
+[1m[92m   Compiling[0m colorchoice v1.0.5
+[1m[92m   Compiling[0m anstyle-parse v1.0.0
+[1m[92m   Compiling[0m regex-syntax v0.8.11
+[1m[92m   Compiling[0m anstyle v1.0.14
+[1m[92m   Compiling[0m unicode-width v0.2.0
+[1m[92m   Compiling[0m lazy_static v1.5.0
+[1m[92m   Compiling[0m anstream v1.0.0
+[1m[92m   Compiling[0m clap_lex v1.1.0
+[1m[92m   Compiling[0m cassowary v0.3.0
+[1m[92m   Compiling[0m clap_builder v4.6.2
+[1m[92m   Compiling[0m ratatui v0.29.0
+[1m[92m   Compiling[0m sharded-slab v0.1.7
+[1m[92m   Compiling[0m regex-automata v0.4.16
+[1m[92m   Compiling[0m gridbox-storage v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-storage)
+[1m[91merror[E0432][0m[1m: unresolved import `config::OpenF1Config`[0m
+ [1m[94m--> [0mcrates/gridbox-storage/src/lib.rs:5:51
+  [1m[94m|[0m
+[1m[94m5[0m [1m[94m|[0m pub use config::{Config, FastF1Config, LlmConfig, OpenF1Config, UiConfig};
+  [1m[94m|[0m                                                   [1m[91m^^^^^^^^^^^^[0m [1m[91mno `OpenF1Config` in `config`[0m
+  [1m[94m|[0m
+[1m[96mhelp[0m: a similar name exists in the module
+  [1m[94m|[0m
+[1m[94m5[0m [91m- [0mpub use config::{Config, FastF1Config, LlmConfig, [91mOpenF1Config[0m, UiConfig};
+[1m[94m5[0m [92m+ [0mpub use config::{Config, FastF1Config, LlmConfig, [92mFastF1Config[0m, UiConfig};
+  [1m[94m|[0m
+
+[1mFor more information about this error, try `rustc --explain E0432`.[0m
+[1m[91merror[0m: could not compile `gridbox-storage` (lib) due to 1 previous error
+[1m[33mwarning[0m: build failed, waiting for other jobs to finish...
+EXIT_CODE=101
+
+===== UV SYNC =====
+Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+Creating virtual environment at: .venv
+Resolved 49 packages in 0.58ms
+   Building gridbox-fastf1 @ file:///home/runner/work/GridBox/GridBox
+Downloading kiwisolver (1.4MiB)
+Downloading rapidfuzz (3.0MiB)
+Downloading pillow (6.6MiB)
+Downloading pydantic-core (2.0MiB)
+Downloading pygments (1.2MiB)
+Downloading cryptography (4.5MiB)
+Downloading numpy (15.9MiB)
+Downloading matplotlib (9.6MiB)
+Downloading ruff (10.9MiB)
+Downloading scipy (33.7MiB)
+Downloading fonttools (4.8MiB)
+Downloading pandas (11.8MiB)
+ Downloaded kiwisolver
+ Downloaded pydantic-core
+ Downloaded rapidfuzz
+ Downloaded pygments
+ Downloaded cryptography
+ Downloaded fonttools
+ Downloaded pillow
+ Downloaded ruff
+ Downloaded matplotlib
+ Downloaded numpy
+      Built gridbox-fastf1 @ file:///home/runner/work/GridBox/GridBox
+ Downloaded scipy
+ Downloaded pandas
+Prepared 46 packages in 1.62s
+Installed 46 packages in 164ms
+ + annotated-types==0.7.0
+ + attrs==26.1.0
+ + cattrs==26.1.0
+ + certifi==2026.6.17
+ + cffi==2.1.0
+ + charset-normalizer==3.4.9
+ + contourpy==1.3.3
+ + cryptography==49.0.0
+ + cycler==0.12.1
+ + fastf1==3.8.3
+ + fonttools==4.63.0
+ + gridbox-fastf1==0.1.0 (from file:///home/runner/work/GridBox/GridBox)
+ + idna==3.18
+ + iniconfig==2.3.0
+ + kiwisolver==1.5.0
+ + matplotlib==3.11.0
+ + msgpack==1.1.2
+ + numpy==2.5.1
+ + packaging==26.2
+ + pandas==2.3.3
+ + pillow==12.3.0
+ + platformdirs==4.10.0
+ + pluggy==1.6.0
+ + pycparser==3.0
+ + pydantic==2.13.4
+ + pydantic-core==2.46.4
+ + pygments==2.20.0
+ + pyjwt==2.13.0
+ + pyparsing==3.3.2
+ + pytest==9.1.1
+ + python-dateutil==2.9.0.post0
+ + pytz==2026.2
+ + rapidfuzz==3.14.5
+ + requests==2.34.2
+ + requests-cache==1.3.3
+ + ruff==0.15.22
+ + scipy==1.18.0
+ + signalrcore==1.0.2
+ + six==1.17.0
+ + timple==0.1.8
+ + typing-extensions==4.16.0
+ + typing-inspection==0.4.2
+ + tzdata==2026.3
+ + url-normalize==3.0.0
+ + urllib3==2.7.0
+ + websockets==16.1
+EXIT_CODE=0
+
+===== RUFF =====
+All checks passed!
+EXIT_CODE=0
+
+===== PYTEST =====
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/runner/work/GridBox/GridBox
+configfile: pyproject.toml
+testpaths: python/tests
+collected 4 items
+
+python/tests/test_protocol.py ....                                       [100%]
+
+============================== 4 passed in 0.01s ===============================
+EXIT_CODE=0
+
+===== REMOVED PROVIDER STRING CHECK =====
+./crates/gridbox-storage/src/lib.rs:5:pub use config::{Config, FastF1Config, LlmConfig, OpenF1Config, UiConfig};
+Forbidden provider references remain
+EXIT_CODE=1
+OVERALL_EXIT_CODE=1
