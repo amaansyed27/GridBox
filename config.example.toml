@@ -4,13 +4,6 @@ provider = "ollama"
 base_url = "http://127.0.0.1:11434"
 model = "qwen3.5:4b"
 
-[openf1]
-base_url = "https://api.openf1.org/v1"
-token = ""
-poll_interval_secs = 5
-auto_detect = true
-record_live_sessions = true
-
 [fastf1]
 enabled = true
 python_command = "uv"
