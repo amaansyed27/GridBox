@@ -8,7 +8,10 @@ use ratatui::{
 
 pub fn render(frame: &mut Frame<'_>, area: Rect) {
     let commands = [
-        ("/driver <number>", "Focus a driver in the local demo analysis"),
+        (
+            "/driver <number>",
+            "Focus a driver in the local demo analysis",
+        ),
         ("/schedule <year>", "Load a Jolpica season schedule"),
         (
             "/session <year> <event> <session>",
