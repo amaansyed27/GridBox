@@ -18,8 +18,10 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum Command {
-    /// Start directly in live-session mode.
+    /// Start directly in live-session mode using the configured provider.
     Live,
+    /// Run a fully local moving live-session simulation with no API key.
+    DemoLive,
     /// Check OpenF1, Ollama, FastF1 and local storage.
     Doctor,
     /// Print a season schedule from Jolpica.
