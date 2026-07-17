@@ -11,7 +11,7 @@ class Request:
     params: dict[str, Any]
 
     @classmethod
-    def from_dict(cls, payload: dict[str, Any]) -> "Request":
+    def from_dict(cls, payload: dict[str, Any]) -> Request:
         request_id = payload.get("id")
         method = payload.get("method")
         params = payload.get("params", {})
