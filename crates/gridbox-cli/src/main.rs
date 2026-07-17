@@ -80,11 +80,7 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
-fn build_services(
-    jolpica: JolpicaClient,
-    agent: OllamaAgent,
-    fastf1: FastF1Client,
-) -> AppServices {
+fn build_services(jolpica: JolpicaClient, agent: OllamaAgent, fastf1: FastF1Client) -> AppServices {
     AppServices {
         jolpica,
         agent,
