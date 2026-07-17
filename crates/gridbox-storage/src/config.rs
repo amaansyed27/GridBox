@@ -107,7 +107,7 @@ impl Default for FastF1Config {
     fn default() -> Self {
         Self {
             enabled: true,
-            python_command: "python".to_string(),
+            python_command: "uv".to_string(),
             module: "gridbox_fastf1".to_string(),
             python_root: PathBuf::from("python"),
         }
