@@ -157,7 +157,11 @@ pub fn render(frame: &mut Frame<'_>, area: Rect, app: &App) {
                     .map_or("-".into(), |value| format!("{value:.1}")),
                 weather.rainfall.map_or_else(
                     || "-".to_string(),
-                    |value| if value { "yes".to_string() } else { "no".to_string() },
+                    |value| if value {
+                        "yes".to_string()
+                    } else {
+                        "no".to_string()
+                    },
                 )
             )
         },
