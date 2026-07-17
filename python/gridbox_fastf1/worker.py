@@ -5,7 +5,8 @@ import json
 import os
 import sys
 import traceback
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from gridbox_fastf1.protocol import Request, failure, success
 
