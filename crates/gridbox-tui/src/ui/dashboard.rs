@@ -27,11 +27,8 @@ pub fn render(frame: &mut Frame<'_>, area: Rect, app: &App) {
     );
 
     let data_state = match &app.live {
-        Some(snapshot) if snapshot.session.is_live_at(chrono::Utc::now()) => {
-            format!("LIVE: {}", snapshot.session.title())
-        }
-        Some(snapshot) => format!("Latest: {}", snapshot.session.title()),
-        None => "No session loaded".to_string(),
+        Some(snapshot) => format!("Local demo: {}", snapshot.session.title()),
+        None => "FastF1 ready for completed-session analysis".to_string(),
     };
 
     let lines = vec![
@@ -45,15 +42,15 @@ pub fn render(frame: &mut Frame<'_>, area: Rect, app: &App) {
         ]),
         Line::from(vec![
             Span::styled("Local ", theme::accent()),
-            Span::raw("analysis, chat history, cache and recordings stay on this machine"),
+            Span::raw("analysis, chat history, cache and generated demo data stay on this machine"),
         ]),
         Line::raw(""),
         Line::styled("Start with one of these:", theme::muted()),
-        Line::raw("  /live"),
+        Line::raw("  gridbox demo-live"),
         Line::raw("  /schedule 2026"),
-        Line::raw("  /session 2025 Monaco Q"),
-        Line::raw("  /compare 2025 Monaco Q NOR VER"),
-        Line::raw("  Ask: Who is currently inside an undercut or DRS window?"),
+        Line::raw("  /session 2026 Monaco Q"),
+        Line::raw("  /compare 2026 Monaco Q NOR VER"),
+        Line::raw("  Ask: Compare the loaded drivers and explain the main pace difference."),
     ];
 
     frame.render_widget(
