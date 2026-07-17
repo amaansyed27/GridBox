@@ -7,8 +7,7 @@ use cli::{Cli, Command};
 use gridbox_agent::OllamaAgent;
 use gridbox_fastf1_client::FastF1Client;
 use gridbox_jolpica::JolpicaClient;
-use gridbox_openf1::OpenF1Client;
-use gridbox_storage::{Config, LiveRecorder};
+use gridbox_storage::Config;
 use gridbox_tui::{run_tui, AppServices, LaunchMode};
 use tracing_subscriber::EnvFilter;
 
@@ -18,7 +17,6 @@ async fn main() -> Result<()> {
     init_tracing();
 
     let (config, paths) = Config::load(cli.config.as_deref())?;
-    let openf1 = OpenF1Client::new(config.openf1.base_url.clone(), config.openf1.token.clone());
     let jolpica = JolpicaClient::default();
     let agent = OllamaAgent::new(config.llm.base_url.clone(), config.llm.model.clone());
     let fastf1 = FastF1Client::new(
@@ -26,11 +24,10 @@ async fn main() -> Result<()> {
         config.fastf1.module.clone(),
         config.fastf1.python_root.clone(),
     );
-    let recorder = LiveRecorder::new(paths.recordings_dir.clone());
 
     match cli.command {
         Some(Command::Doctor) => {
-            let healthy = doctor::run(&paths, &openf1, &agent, &fastf1).await;
+            let healthy = doctor::run(&paths, &agent, &fastf1).await;
             if !healthy {
                 std::process::exit(1);
             }
@@ -62,18 +59,10 @@ async fn main() -> Result<()> {
             println!("{}", serde_json::to_string_pretty(&result)?);
         }
         Some(Command::ConfigPath) => println!("{}", paths.config_file.display()),
-        Some(Command::Live) => {
-            run_tui(
-                config.clone(),
-                build_services(&config, openf1, jolpica, agent, fastf1, recorder),
-                LaunchMode::Live,
-            )
-            .await?;
-        }
         Some(Command::DemoLive) => {
             run_tui(
                 config.clone(),
-                build_services(&config, openf1, jolpica, agent, fastf1, recorder),
+                build_services(jolpica, agent, fastf1),
                 LaunchMode::Demo,
             )
             .await?;
@@ -81,8 +70,8 @@ async fn main() -> Result<()> {
         None => {
             run_tui(
                 config.clone(),
-                build_services(&config, openf1, jolpica, agent, fastf1, recorder),
-                LaunchMode::Auto,
+                build_services(jolpica, agent, fastf1),
+                LaunchMode::Workspace,
             )
             .await?;
         }
@@ -92,20 +81,14 @@ async fn main() -> Result<()> {
 }
 
 fn build_services(
-    config: &Config,
-    openf1: OpenF1Client,
     jolpica: JolpicaClient,
     agent: OllamaAgent,
     fastf1: FastF1Client,
-    recorder: LiveRecorder,
 ) -> AppServices {
     AppServices {
-        openf1,
         jolpica,
         agent,
         fastf1,
-        recorder,
-        record_live_sessions: config.openf1.record_live_sessions,
     }
 }
 
