@@ -2,9 +2,9 @@
 
 ## Design principles
 
-1. **Local-first:** model inference, analysis, recordings and application state remain on the device.
-2. **Deterministic before generative:** the local LLM explains structured calculations; it is not the source of lap times or live gaps.
-3. **Provider isolation:** OpenF1, Jolpica, FastF1 and Ollama are accessed through separate crates or processes.
+1. **Local-first:** model inference, analysis, cache and application state remain on the device.
+2. **Deterministic before generative:** the local LLM explains structured calculations; it is not the source of lap times or telemetry.
+3. **Provider isolation:** FastF1, Jolpica and Ollama are accessed through separate crates or processes.
 4. **Failure containment:** a Python or data-provider failure must not crash the terminal UI.
 5. **Modularity:** each crate owns one clear responsibility. `main.rs` only bootstraps the application.
 
@@ -13,12 +13,11 @@
 | Crate | Responsibility |
 |---|---|
 | `gridbox-cli` | Clap commands, configuration and service wiring |
-| `gridbox-tui` | Ratatui rendering, keyboard input and task dispatch |
+| `gridbox-tui` | Ratatui rendering, keyboard input, task dispatch and local simulation |
 | `gridbox-models` | Provider-independent domain models |
-| `gridbox-storage` | Config paths, TOML loading and local recordings |
-| `gridbox-openf1` | OpenF1 REST client and snapshot normalization |
-| `gridbox-jolpica` | Historical schedule client |
-| `gridbox-analysis` | Deterministic live strategy signals and LLM context |
+| `gridbox-storage` | Config paths, TOML loading and local application directories |
+| `gridbox-jolpica` | Historical and current season schedule client |
+| `gridbox-analysis` | Deterministic strategy signals and LLM context |
 | `gridbox-agent` | Local Ollama health checks and chat requests |
 | `gridbox-fastf1-client` | NDJSON process protocol for the Python worker |
 
@@ -27,7 +26,7 @@
 The FastF1 ecosystem remains in Python. Rust launches:
 
 ```text
-python -m gridbox_fastf1
+uv run python -m gridbox_fastf1
 ```
 
 The process reads one JSON request from standard input and returns one JSON response. Each handler lives in its own module:
@@ -38,33 +37,45 @@ The process reads one JSON request from standard input and returns one JSON resp
 
 A worker crash or missing dependency becomes a structured error in the TUI.
 
-## Live flow
+## Completed-session flow
 
 ```text
-OpenF1 REST
+FastF1
     ↓
-gridbox-openf1 raw response models
+Python handler modules
+    ↓ NDJSON request/response
+Rust gridbox-fastf1-client
+    ↓
+provider-independent analysis result
+    ├── engineer conversation
+    ├── lap and telemetry comparisons
+    └── future exports and local warehouse
+```
+
+## Local demo flow
+
+```text
+Typed local session generator
     ↓
 provider-independent LiveSnapshot
     ├── timing tower
     ├── race-control panel
-    ├── JSONL recorder
+    ├── weather panel
     ├── deterministic strategy analysis
     └── compact context for the local LLM
 ```
 
-The TUI polls only while live mode is active or the latest session falls inside its configured live window.
+The demo generator is synthetic, continuously changing and explicitly labeled. It exercises the actual TUI and analysis paths without presenting generated data as a real Formula 1 session.
 
 ## Trust boundary
 
-The local model must not be treated as a telemetry calculator. `gridbox-analysis` creates the strategy signals first. The agent receives those signals plus normalized live data and is instructed to identify missing or stale data.
+The local model must not be treated as a telemetry calculator. `gridbox-analysis` creates strategy signals first. The agent receives those signals plus normalized data and is instructed to identify missing or stale information.
 
 ## Planned extensions
 
-- OpenF1 WebSocket and MQTT transports.
 - Persistent FastF1 worker pool.
 - DuckDB and Parquet telemetry warehouse.
 - Unicode/Braille telemetry and track-map widgets.
-- Replay engine using recorded session events.
+- Replay engine using locally stored session artifacts.
 - Monte Carlo pit-window and safety-car simulations.
-- Plugin SDK for other motorsport series.
+- Plugin SDK for other motorsport series and authorized data sources.
