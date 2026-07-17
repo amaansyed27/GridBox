@@ -8,17 +8,15 @@ use ratatui::{
 
 pub fn render(frame: &mut Frame<'_>, area: Rect) {
     let commands = [
-        ("/live", "Detect and load the active/latest OpenF1 session"),
-        ("/refresh", "Refresh live timing data"),
-        ("/driver <number>", "Focus a driver in live analysis"),
+        ("/driver <number>", "Focus a driver in the local demo analysis"),
         ("/schedule <year>", "Load a Jolpica season schedule"),
         (
             "/session <year> <event> <session>",
-            "Load a FastF1 session summary",
+            "Load a completed FastF1 session summary",
         ),
         (
             "/compare <year> <event> <session> <drivers…>",
-            "Compare fastest laps",
+            "Compare fastest laps from FastF1",
         ),
         ("/model <ollama-model>", "Change the local Ollama model"),
         ("/clear", "Clear the engineer conversation"),
@@ -38,8 +36,9 @@ pub fn render(frame: &mut Frame<'_>, area: Rect) {
         Line::raw("F1–F5 switch views · Tab cycles views · Ctrl+L clears input · Ctrl+Q exits"),
         Line::raw(""),
         Line::styled("Notes", theme::accent()),
+        Line::raw("Run `gridbox demo-live` to exercise the moving timing and strategy views."),
         Line::raw("Event names in slash commands currently use one token, e.g. AbuDhabi."),
-        Line::raw("Live real-time OpenF1 access may require an OpenF1 subscription token."),
+        Line::raw("FastF1 is used for completed-session timing and telemetry analysis."),
         Line::raw("All AI inference is sent only to the configured localhost model server."),
     ]);
 
