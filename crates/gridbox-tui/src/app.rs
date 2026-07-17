@@ -10,6 +10,7 @@ use serde_json::Value;
 pub enum LaunchMode {
     Auto,
     Live,
+    Demo,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -60,16 +61,20 @@ pub struct App {
 
 impl App {
     pub fn new(launch_mode: LaunchMode, model: impl Into<String>, compact_logo: bool) -> Self {
-        let active_tab = if launch_mode == LaunchMode::Live {
-            Tab::Live
-        } else {
+        let active_tab = if launch_mode == LaunchMode::Auto {
             Tab::Dashboard
+        } else {
+            Tab::Live
         };
         Self {
             launch_mode,
             active_tab,
             input: String::new(),
-            status: "Ready. /help lists commands.".to_string(),
+            status: if launch_mode == LaunchMode::Demo {
+                "Starting fully local live demo…".to_string()
+            } else {
+                "Ready. /help lists commands.".to_string()
+            },
             live: None,
             schedule: Vec::new(),
             chat: vec![ChatMessage::assistant(
@@ -121,20 +126,28 @@ impl App {
         match event {
             AppEvent::LiveLoaded(Ok(snapshot)) => {
                 let is_live = snapshot.session.is_live_at(Utc::now());
-                self.status = if is_live {
+                self.status = if self.launch_mode == LaunchMode::Demo {
                     format!(
-                        "LIVE · {} · {} drivers",
+                        "DEMO LIVE · {} · {} drivers · fully local",
                         snapshot.session.title(),
                         snapshot.drivers.len()
                     )
+                } else if is_live {
+                    format!(
+                        "LIVE · {} · {} drivers · {}",
+                        snapshot.session.title(),
+                        snapshot.drivers.len(),
+                        snapshot.source
+                    )
                 } else {
                     format!(
-                        "Latest session: {} · currently not active",
-                        snapshot.session.title()
+                        "Latest session: {} · currently not active · {}",
+                        snapshot.session.title(),
+                        snapshot.source
                     )
                 };
                 self.live = Some(*snapshot);
-                if is_live || self.launch_mode == LaunchMode::Live {
+                if is_live || self.launch_mode != LaunchMode::Auto {
                     self.active_tab = Tab::Live;
                 }
             }
@@ -194,6 +207,11 @@ impl App {
                 self.chat
                     .push(ChatMessage::assistant("Conversation cleared."));
                 self.status = "Engineer conversation cleared".to_string();
+                AppAction::None
+            }
+            UserCommand::Live | UserCommand::Refresh if self.launch_mode == LaunchMode::Demo => {
+                self.active_tab = Tab::Live;
+                self.status = "Demo live stream runs continuously and needs no refresh".to_string();
                 AppAction::None
             }
             UserCommand::Live | UserCommand::Refresh => {
