@@ -1,4 +1,4 @@
-use chrono::{Duration, Utc};
+use chrono::{Datelike, Duration, Utc};
 use gridbox_models::{
     DriverSnapshot, LiveSnapshot, RaceControlEvent, SessionInfo, WeatherSnapshot,
 };
