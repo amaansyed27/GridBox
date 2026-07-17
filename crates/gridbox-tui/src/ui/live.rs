@@ -20,14 +20,11 @@ pub fn render(frame: &mut Frame<'_>, area: Rect, app: &App) {
         return;
     };
 
-    let [timing_area, side_area] = Layout::horizontal([
-        Constraint::Percentage(68),
-        Constraint::Percentage(32),
-    ])
-    .areas(area);
+    let [timing_area, side_area] =
+        Layout::horizontal([Constraint::Percentage(68), Constraint::Percentage(32)]).areas(area);
 
-    let header = Row::new(["P", "DRV", "GAP", "INT", "LAP", "LAST", "TYRE", "AGE"])
-        .style(theme::accent());
+    let header =
+        Row::new(["P", "DRV", "GAP", "INT", "LAP", "LAST", "TYRE", "AGE"]).style(theme::accent());
     let rows = snapshot.sorted_drivers().into_iter().map(|driver| {
         let selected = app.selected_driver == Some(driver.driver_number);
         let style = if selected {
@@ -42,12 +39,7 @@ pub fn render(frame: &mut Frame<'_>, area: Rect, app: &App) {
                     .map_or("-".into(), |value| value.to_string()),
             ),
             Cell::from(driver.display_name().to_string()),
-            Cell::from(
-                driver
-                    .gap_to_leader
-                    .clone()
-                    .unwrap_or_else(|| "-".into()),
-            ),
+            Cell::from(driver.gap_to_leader.clone().unwrap_or_else(|| "-".into())),
             Cell::from(driver.interval.clone().unwrap_or_else(|| "-".into())),
             Cell::from(
                 driver
@@ -170,11 +162,7 @@ pub fn render(frame: &mut Frame<'_>, area: Rect, app: &App) {
         },
     );
     frame.render_widget(
-        Paragraph::new(weather).block(
-            Block::default()
-                .title(" Weather ")
-                .borders(Borders::ALL),
-        ),
+        Paragraph::new(weather).block(Block::default().title(" Weather ").borders(Borders::ALL)),
         weather_area,
     );
 }

@@ -61,12 +61,7 @@ async fn run_loop(
     let mut last_live_refresh = Instant::now() - live_poll;
 
     if mode == LaunchMode::Live || config.openf1.auto_detect {
-        dispatch_action(
-            AppAction::RefreshLive,
-            &app,
-            services.clone(),
-            tx.clone(),
-        );
+        dispatch_action(AppAction::RefreshLive, &app, services.clone(), tx.clone());
         last_live_refresh = Instant::now();
     }
 
@@ -80,12 +75,7 @@ async fn run_loop(
             && !app.busy
         {
             app.busy = true;
-            dispatch_action(
-                AppAction::RefreshLive,
-                &app,
-                services.clone(),
-                tx.clone(),
-            );
+            dispatch_action(AppAction::RefreshLive, &app, services.clone(), tx.clone());
             last_live_refresh = Instant::now();
         }
 

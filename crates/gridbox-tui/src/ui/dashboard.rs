@@ -10,11 +10,8 @@ use ratatui::{
 };
 
 pub fn render(frame: &mut Frame<'_>, area: Rect, app: &App) {
-    let [logo_area, body_area] = Layout::vertical([
-        Constraint::Percentage(48),
-        Constraint::Percentage(52),
-    ])
-    .areas(area);
+    let [logo_area, body_area] =
+        Layout::vertical([Constraint::Percentage(48), Constraint::Percentage(52)]).areas(area);
 
     let logo_text = if app.compact_logo || logo_area.width < 70 || logo_area.height < 8 {
         logo::COMPACT

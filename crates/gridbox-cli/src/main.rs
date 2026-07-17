@@ -18,10 +18,7 @@ async fn main() -> Result<()> {
     init_tracing();
 
     let (config, paths) = Config::load(cli.config.as_deref())?;
-    let openf1 = OpenF1Client::new(
-        config.openf1.base_url.clone(),
-        config.openf1.token.clone(),
-    );
+    let openf1 = OpenF1Client::new(config.openf1.base_url.clone(), config.openf1.token.clone());
     let jolpica = JolpicaClient::default();
     let agent = OllamaAgent::new(config.llm.base_url.clone(), config.llm.model.clone());
     let fastf1 = FastF1Client::new(

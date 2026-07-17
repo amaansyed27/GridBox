@@ -147,8 +147,9 @@ impl App {
                 self.active_tab = Tab::Engineer;
             }
             AppEvent::AiCompleted(Err(error)) => {
-                self.chat
-                    .push(ChatMessage::assistant(format!("Local model error: {error}")));
+                self.chat.push(ChatMessage::assistant(format!(
+                    "Local model error: {error}"
+                )));
                 self.status = "Local model request failed".to_string();
                 self.active_tab = Tab::Engineer;
             }
@@ -161,8 +162,8 @@ impl App {
                 self.status = format!("Schedule unavailable: {error}");
             }
             AppEvent::FastF1Completed(Ok(result)) => {
-                let pretty = serde_json::to_string_pretty(&result)
-                    .unwrap_or_else(|_| result.to_string());
+                let pretty =
+                    serde_json::to_string_pretty(&result).unwrap_or_else(|_| result.to_string());
                 self.chat.push(ChatMessage::assistant(format!(
                     "FastF1 analysis result:\n{pretty}"
                 )));
@@ -190,7 +191,8 @@ impl App {
             UserCommand::Quit => AppAction::Quit,
             UserCommand::Clear => {
                 self.chat.clear();
-                self.chat.push(ChatMessage::assistant("Conversation cleared."));
+                self.chat
+                    .push(ChatMessage::assistant("Conversation cleared."));
                 self.status = "Engineer conversation cleared".to_string();
                 AppAction::None
             }

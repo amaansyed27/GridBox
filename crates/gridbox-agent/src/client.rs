@@ -68,7 +68,10 @@ impl OllamaAgent {
         user_message: &str,
     ) -> Result<String, AgentError> {
         let installed = self.health().await?;
-        if !installed.iter().any(|name| model_matches(name, &self.model)) {
+        if !installed
+            .iter()
+            .any(|name| model_matches(name, &self.model))
+        {
             return Err(AgentError::ModelMissing(self.model.clone()));
         }
 

@@ -66,19 +66,13 @@ pub fn analyze_live_strategy(snapshot: &LiveSnapshot) -> Vec<StrategyInsight> {
         }
     }
 
-    if snapshot
-        .race_control
-        .iter()
-        .rev()
-        .take(5)
-        .any(|event| {
-            event
-                .flag
-                .as_deref()
-                .is_some_and(|flag| flag.contains("YELLOW") || flag.contains("RED"))
-                || event.category.contains("SafetyCar")
-        })
-    {
+    if snapshot.race_control.iter().rev().take(5).any(|event| {
+        event
+            .flag
+            .as_deref()
+            .is_some_and(|flag| flag.contains("YELLOW") || flag.contains("RED"))
+            || event.category.contains("SafetyCar")
+    }) {
         insights.push(StrategyInsight {
             severity: StrategySeverity::Critical,
             title: "Race-control intervention".to_string(),

@@ -3,304 +3,7 @@ rustc 1.97.1 (8bab26f4f 2026-07-14)
 EXIT_CODE=0
 
 ===== CARGO FORMAT =====
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-agent/src/client.rs:68:
-         user_message: &str,
-     ) -> Result<String, AgentError> {
-         let installed = self.health().await?;
--        if !installed.iter().any(|name| model_matches(name, &self.model)) {
-+        if !installed
-+            .iter()
-+            .any(|name| model_matches(name, &self.model))
-+        {
-             return Err(AgentError::ModelMissing(self.model.clone()));
-         }
- 
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-analysis/src/strategy.rs:66:
-         }
-     }
- 
--    if snapshot
--        .race_control
--        .iter()
--        .rev()
--        .take(5)
--        .any(|event| {
--            event
--                .flag
--                .as_deref()
--                .is_some_and(|flag| flag.contains("YELLOW") || flag.contains("RED"))
--                || event.category.contains("SafetyCar")
--        })
--    {
-+    if snapshot.race_control.iter().rev().take(5).any(|event| {
-+        event
-+            .flag
-+            .as_deref()
-+            .is_some_and(|flag| flag.contains("YELLOW") || flag.contains("RED"))
-+            || event.category.contains("SafetyCar")
-+    }) {
-         insights.push(StrategyInsight {
-             severity: StrategySeverity::Critical,
-             title: "Race-control intervention".to_string(),
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-analysis/src/summary.rs:22:
-         let _ = writeln!(
-             output,
-             "{marker} P{} {} (#{}), gap {}, interval {}, lap {}, tyre {} age {}",
--            driver.position.map_or("?".into(), |value| value.to_string()),
-+            driver
-+                .position
-+                .map_or("?".into(), |value| value.to_string()),
-             driver.display_name(),
-             driver.driver_number,
-             driver.gap_to_leader.as_deref().unwrap_or("unknown"),
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-analysis/src/summary.rs:29:
-             driver.interval.as_deref().unwrap_or("unknown"),
--            driver.lap_number.map_or("?".into(), |value| value.to_string()),
-+            driver
-+                .lap_number
-+                .map_or("?".into(), |value| value.to_string()),
-             driver.compound.as_deref().unwrap_or("unknown"),
--            driver.tyre_age.map_or("?".into(), |value| value.to_string()),
-+            driver
-+                .tyre_age
-+                .map_or("?".into(), |value| value.to_string()),
-         );
-     }
- 
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-analysis/src/summary.rs:42:
-         let _ = writeln!(
-             output,
-             "Weather: air {:?}C, track {:?}C, rain {:?}, humidity {:?}%",
--            weather.air_temperature,
--            weather.track_temperature,
--            weather.rainfall,
--            weather.humidity
-+            weather.air_temperature, weather.track_temperature, weather.rainfall, weather.humidity
-         );
-     }
- 
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-cli/src/main.rs:18:
-     init_tracing();
- 
-     let (config, paths) = Config::load(cli.config.as_deref())?;
--    let openf1 = OpenF1Client::new(
--        config.openf1.base_url.clone(),
--        config.openf1.token.clone(),
--    );
-+    let openf1 = OpenF1Client::new(config.openf1.base_url.clone(), config.openf1.token.clone());
-     let jolpica = JolpicaClient::default();
-     let agent = OllamaAgent::new(config.llm.base_url.clone(), config.llm.model.clone());
-     let fastf1 = FastF1Client::new(
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-fastf1-client/src/client.rs:31:
-         self.request("ping", json!({})).await
-     }
- 
--    pub async fn session_summary(
--        &self,
--        year: u16,
--        event: &str,
--        session: &str,
--    ) -> Result<Value> {
-+    pub async fn session_summary(&self, year: u16, event: &str, session: &str) -> Result<Value> {
-         self.request(
-             "session_summary",
-             json!({"year": year, "event": event, "session": session}),
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-fastf1-client/src/client.rs:107:
-             )
-         })?;
- 
--        let mut stdin = child.stdin.take().context("FastF1 worker stdin unavailable")?;
-+        let mut stdin = child
-+            .stdin
-+            .take()
-+            .context("FastF1 worker stdin unavailable")?;
-         stdin.write_all(encoded.as_bytes()).await?;
-         stdin.write_all(b"\n").await?;
-         stdin.shutdown().await?;
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-models/src/lib.rs:4:
- 
- pub use chat::{ChatMessage, ChatRole};
- pub use history::RaceEvent;
--pub use live::{
--    DriverSnapshot, LiveSnapshot, RaceControlEvent, SessionInfo, WeatherSnapshot,
--};
-+pub use live::{DriverSnapshot, LiveSnapshot, RaceControlEvent, SessionInfo, WeatherSnapshot};
- 
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-openf1/src/client.rs:189:
-     }
- }
- 
--fn latest_by_driver<T, FNumber, FDate>(
--    items: Vec<T>,
--    number: FNumber,
--    date: FDate,
--) -> Vec<T>
-+fn latest_by_driver<T, FNumber, FDate>(items: Vec<T>, number: FNumber, date: FDate) -> Vec<T>
- where
-     FNumber: Fn(&T) -> u32,
-     FDate: Fn(&T) -> DateTime<Utc>,
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-storage/src/recording.rs:19:
-     pub fn record_snapshot(&self, snapshot: &LiveSnapshot) -> Result<PathBuf> {
-         let slug = slugify(&format!(
-             "{}-{}-{}",
--            snapshot.session.year,
--            snapshot.session.location,
--            snapshot.session.session_name
-+            snapshot.session.year, snapshot.session.location, snapshot.session.session_name
-         ));
-         let session_dir = self.root.join(slug);
-         std::fs::create_dir_all(&session_dir)
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-tui/src/app.rs:147:
-                 self.active_tab = Tab::Engineer;
-             }
-             AppEvent::AiCompleted(Err(error)) => {
--                self.chat
--                    .push(ChatMessage::assistant(format!("Local model error: {error}")));
-+                self.chat.push(ChatMessage::assistant(format!(
-+                    "Local model error: {error}"
-+                )));
-                 self.status = "Local model request failed".to_string();
-                 self.active_tab = Tab::Engineer;
-             }
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-tui/src/app.rs:161:
-                 self.status = format!("Schedule unavailable: {error}");
-             }
-             AppEvent::FastF1Completed(Ok(result)) => {
--                let pretty = serde_json::to_string_pretty(&result)
--                    .unwrap_or_else(|_| result.to_string());
-+                let pretty =
-+                    serde_json::to_string_pretty(&result).unwrap_or_else(|_| result.to_string());
-                 self.chat.push(ChatMessage::assistant(format!(
-                     "FastF1 analysis result:\n{pretty}"
-                 )));
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-tui/src/app.rs:190:
-             UserCommand::Quit => AppAction::Quit,
-             UserCommand::Clear => {
-                 self.chat.clear();
--                self.chat.push(ChatMessage::assistant("Conversation cleared."));
-+                self.chat
-+                    .push(ChatMessage::assistant("Conversation cleared."));
-                 self.status = "Engineer conversation cleared".to_string();
-                 AppAction::None
-             }
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-tui/src/runtime.rs:61:
-     let mut last_live_refresh = Instant::now() - live_poll;
- 
-     if mode == LaunchMode::Live || config.openf1.auto_detect {
--        dispatch_action(
--            AppAction::RefreshLive,
--            &app,
--            services.clone(),
--            tx.clone(),
--        );
-+        dispatch_action(AppAction::RefreshLive, &app, services.clone(), tx.clone());
-         last_live_refresh = Instant::now();
-     }
- 
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-tui/src/runtime.rs:80:
-             && !app.busy
-         {
-             app.busy = true;
--            dispatch_action(
--                AppAction::RefreshLive,
--                &app,
--                services.clone(),
--                tx.clone(),
--            );
-+            dispatch_action(AppAction::RefreshLive, &app, services.clone(), tx.clone());
-             last_live_refresh = Instant::now();
-         }
- 
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-tui/src/ui/dashboard.rs:10:
- };
- 
- pub fn render(frame: &mut Frame<'_>, area: Rect, app: &App) {
--    let [logo_area, body_area] = Layout::vertical([
--        Constraint::Percentage(48),
--        Constraint::Percentage(52),
--    ])
--    .areas(area);
-+    let [logo_area, body_area] =
-+        Layout::vertical([Constraint::Percentage(48), Constraint::Percentage(52)]).areas(area);
- 
-     let logo_text = if app.compact_logo || logo_area.width < 70 || logo_area.height < 8 {
-         logo::COMPACT
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-tui/src/ui/engineer.rs:27:
-     }
- 
-     frame.render_widget(
--        Paragraph::new(lines)
--            .wrap(Wrap { trim: false })
--            .block(
--                Block::default()
--                    .title(format!(" Local engineer · {} ", app.model))
--                    .borders(Borders::ALL),
--            ),
-+        Paragraph::new(lines).wrap(Wrap { trim: false }).block(
-+            Block::default()
-+                .title(format!(" Local engineer · {} ", app.model))
-+                .borders(Borders::ALL),
-+        ),
-         area,
-     );
- }
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-tui/src/ui/live.rs:20:
-         return;
-     };
- 
--    let [timing_area, side_area] = Layout::horizontal([
--        Constraint::Percentage(68),
--        Constraint::Percentage(32),
--    ])
--    .areas(area);
-+    let [timing_area, side_area] =
-+        Layout::horizontal([Constraint::Percentage(68), Constraint::Percentage(32)]).areas(area);
- 
--    let header = Row::new(["P", "DRV", "GAP", "INT", "LAP", "LAST", "TYRE", "AGE"])
--        .style(theme::accent());
-+    let header =
-+        Row::new(["P", "DRV", "GAP", "INT", "LAP", "LAST", "TYRE", "AGE"]).style(theme::accent());
-     let rows = snapshot.sorted_drivers().into_iter().map(|driver| {
-         let selected = app.selected_driver == Some(driver.driver_number);
-         let style = if selected {
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-tui/src/ui/live.rs:42:
-                     .map_or("-".into(), |value| value.to_string()),
-             ),
-             Cell::from(driver.display_name().to_string()),
--            Cell::from(
--                driver
--                    .gap_to_leader
--                    .clone()
--                    .unwrap_or_else(|| "-".into()),
--            ),
-+            Cell::from(driver.gap_to_leader.clone().unwrap_or_else(|| "-".into())),
-             Cell::from(driver.interval.clone().unwrap_or_else(|| "-".into())),
-             Cell::from(
-                 driver
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-tui/src/ui/live.rs:170:
-         },
-     );
-     frame.render_widget(
--        Paragraph::new(weather).block(
--            Block::default()
--                .title(" Weather ")
--                .borders(Borders::ALL),
--        ),
-+        Paragraph::new(weather).block(Block::default().title(" Weather ").borders(Borders::ALL)),
-         weather_area,
-     );
- }
-Diff in /home/runner/work/GridBox/GridBox/crates/gridbox-tui/src/ui/theme.rs:22:
- }
- 
- pub fn critical() -> Style {
--    Style::default()
--        .fg(Color::Red)
--        .add_modifier(Modifier::BOLD)
-+    Style::default().fg(Color::Red).add_modifier(Modifier::BOLD)
- }
- 
-EXIT_CODE=1
+EXIT_CODE=0
 
 ===== CARGO CHECK =====
 [1m[92m    Updating[0m crates.io index
@@ -311,255 +14,255 @@ EXIT_CODE=1
 [1m[92m      Adding[0m toml v0.8.23 [1m[33m(available: v1.1.3+spec-1.1.0)[0m
 [1m[92m      Adding[0m unicode-width v0.2.0 [1m[33m(available: v0.2.2)[0m
 [1m[92m Downloading[0m crates ...
-[1m[92m  Downloaded[0m atomic-waker v1.1.2
 [1m[92m  Downloaded[0m anstyle-parse v1.0.0
 [1m[92m  Downloaded[0m anstream v1.0.0
 [1m[92m  Downloaded[0m anstyle v1.0.14
-[1m[92m  Downloaded[0m aho-corasick v1.1.4
+[1m[92m  Downloaded[0m atomic-waker v1.1.2
+[1m[92m  Downloaded[0m allocator-api2 v0.2.21
+[1m[92m  Downloaded[0m matchers v0.2.0
+[1m[92m  Downloaded[0m rand_core v0.10.1
+[1m[92m  Downloaded[0m rustversion v1.0.23
+[1m[92m  Downloaded[0m rustls-pki-types v1.15.0
+[1m[92m  Downloaded[0m heck v0.5.0
+[1m[92m  Downloaded[0m rand_pcg v0.10.2
+[1m[92m  Downloaded[0m colorchoice v1.0.5
+[1m[92m  Downloaded[0m dirs-sys v0.5.0
+[1m[92m  Downloaded[0m cfg-if v1.0.4
+[1m[92m  Downloaded[0m signal-hook-mio v0.2.5
+[1m[92m  Downloaded[0m cassowary v0.3.0
+[1m[92m  Downloaded[0m futures-core v0.3.32
+[1m[92m  Downloaded[0m http-body v1.1.0
+[1m[92m  Downloaded[0m errno v0.3.14
+[1m[92m  Downloaded[0m form_urlencoded v1.2.2
+[1m[92m  Downloaded[0m itoa v1.0.18
+[1m[92m  Downloaded[0m instability v0.3.12
+[1m[92m  Downloaded[0m yoke-derive v0.8.2
+[1m[92m  Downloaded[0m rustls-webpki v0.103.13
+[1m[92m  Downloaded[0m lazy_static v1.5.0
+[1m[92m  Downloaded[0m idna_adapter v1.2.2
+[1m[92m  Downloaded[0m equivalent v1.0.2
+[1m[92m  Downloaded[0m futures-task v0.3.32
+[1m[92m  Downloaded[0m clap_lex v1.1.0
+[1m[92m  Downloaded[0m sync_wrapper v1.0.2
 [1m[92m  Downloaded[0m anstyle-query v1.1.5
 [1m[92m  Downloaded[0m cfg_aliases v0.2.2
-[1m[92m  Downloaded[0m colorchoice v1.0.5
-[1m[92m  Downloaded[0m clap_lex v1.1.0
-[1m[92m  Downloaded[0m cfg-if v1.0.4
 [1m[92m  Downloaded[0m darling_macro v0.23.0
 [1m[92m  Downloaded[0m cpufeatures v0.3.0
-[1m[92m  Downloaded[0m castaway v0.2.4
-[1m[92m  Downloaded[0m dirs-sys v0.5.0
-[1m[92m  Downloaded[0m futures-task v0.3.32
-[1m[92m  Downloaded[0m errno v0.3.14
-[1m[92m  Downloaded[0m ident_case v1.0.1
 [1m[92m  Downloaded[0m is_terminal_polyfill v1.70.2
-[1m[92m  Downloaded[0m lru v0.12.5
-[1m[92m  Downloaded[0m lru-slab v0.1.2
-[1m[92m  Downloaded[0m http-body v1.1.0
-[1m[92m  Downloaded[0m equivalent v1.0.2
-[1m[92m  Downloaded[0m futures-core v0.3.32
-[1m[92m  Downloaded[0m instability v0.3.12
-[1m[92m  Downloaded[0m form_urlencoded v1.2.2
-[1m[92m  Downloaded[0m idna_adapter v1.2.2
-[1m[92m  Downloaded[0m lazy_static v1.5.0
-[1m[92m  Downloaded[0m percent-encoding v2.3.2
-[1m[92m  Downloaded[0m rand_core v0.10.1
-[1m[92m  Downloaded[0m potential_utf v0.1.5
-[1m[92m  Downloaded[0m unicode-truncate v1.1.0
-[1m[92m  Downloaded[0m itoa v1.0.18
-[1m[92m  Downloaded[0m matchers v0.2.0
-[1m[92m  Downloaded[0m allocator-api2 v0.2.21
-[1m[92m  Downloaded[0m directories v6.0.0
-[1m[92m  Downloaded[0m rand_pcg v0.10.2
-[1m[92m  Downloaded[0m foldhash v0.1.5
-[1m[92m  Downloaded[0m heck v0.5.0
-[1m[92m  Downloaded[0m ipnet v2.12.0
-[1m[92m  Downloaded[0m displaydoc v0.2.6
-[1m[92m  Downloaded[0m hyper-rustls v0.27.9
+[1m[92m  Downloaded[0m untrusted v0.9.0
 [1m[92m  Downloaded[0m option-ext v0.2.0
-[1m[92m  Downloaded[0m quinn-udp v0.5.15
+[1m[92m  Downloaded[0m strum v0.26.3
+[1m[92m  Downloaded[0m thread_local v1.1.10
+[1m[92m  Downloaded[0m potential_utf v0.1.5
+[1m[92m  Downloaded[0m find-msvc-tools v0.1.9
+[1m[92m  Downloaded[0m ipnet v2.12.0
+[1m[92m  Downloaded[0m lru-slab v0.1.2
+[1m[92m  Downloaded[0m percent-encoding v2.3.2
 [1m[92m  Downloaded[0m quote v1.0.46
-[1m[92m  Downloaded[0m indoc v2.0.7
-[1m[92m  Downloaded[0m nu-ansi-term v0.50.3
-[1m[92m  Downloaded[0m paste v1.0.15
-[1m[92m  Downloaded[0m either v1.16.0
-[1m[92m  Downloaded[0m http-body-util v0.1.4
-[1m[92m  Downloaded[0m anyhow v1.0.103
-[1m[92m  Downloaded[0m autocfg v1.5.1
-[1m[92m  Downloaded[0m cassowary v0.3.0
-[1m[92m  Downloaded[0m chacha20 v0.10.1
+[1m[92m  Downloaded[0m strsim v0.11.1
+[1m[92m  Downloaded[0m tokio-macros v2.7.0
+[1m[92m  Downloaded[0m unicode-truncate v1.1.0
 [1m[92m  Downloaded[0m clap_derive v4.6.1
 [1m[92m  Downloaded[0m darling v0.23.0
-[1m[92m  Downloaded[0m find-msvc-tools v0.1.9
-[1m[92m  Downloaded[0m slab v0.4.12
-[1m[92m  Downloaded[0m tokio-macros v2.7.0
-[1m[92m  Downloaded[0m toml_write v0.1.2
-[1m[92m  Downloaded[0m thread_local v1.1.10
-[1m[92m  Downloaded[0m futures-channel v0.3.32
-[1m[92m  Downloaded[0m litemap v0.8.2
-[1m[92m  Downloaded[0m once_cell v1.21.4
-[1m[92m  Downloaded[0m httparse v1.10.1
+[1m[92m  Downloaded[0m http-body-util v0.1.4
+[1m[92m  Downloaded[0m paste v1.0.15
+[1m[92m  Downloaded[0m utf8_iter v1.0.4
 [1m[92m  Downloaded[0m lock_api v0.4.14
-[1m[92m  Downloaded[0m parking_lot_core v0.9.12
-[1m[92m  Downloaded[0m iana-time-zone v0.1.65
+[1m[92m  Downloaded[0m nu-ansi-term v0.50.3
+[1m[92m  Downloaded[0m subtle v2.6.1
+[1m[92m  Downloaded[0m castaway v0.2.4
+[1m[92m  Downloaded[0m stable_deref_trait v1.2.1
+[1m[92m  Downloaded[0m foldhash v0.1.5
+[1m[92m  Downloaded[0m hyper-rustls v0.27.9
+[1m[92m  Downloaded[0m indoc v2.0.7
 [1m[92m  Downloaded[0m pin-project-lite v0.2.17
-[1m[92m  Downloaded[0m parking_lot v0.12.5
-[1m[92m  Downloaded[0m rustc-hash v2.1.3
-[1m[92m  Downloaded[0m bitflags v2.13.1
-[1m[92m  Downloaded[0m clap v4.6.2
-[1m[92m  Downloaded[0m unicode-segmentation v1.13.3
+[1m[92m  Downloaded[0m autocfg v1.5.1
+[1m[92m  Downloaded[0m directories v6.0.0
+[1m[92m  Downloaded[0m either v1.16.0
+[1m[92m  Downloaded[0m utf8parse v0.2.2
+[1m[92m  Downloaded[0m want v0.3.1
 [1m[92m  Downloaded[0m scopeguard v1.2.0
-[1m[92m  Downloaded[0m serde_urlencoded v0.7.1
-[1m[92m  Downloaded[0m zerofrom v0.1.8
-[1m[92m  Downloaded[0m rustls-pki-types v1.15.0
-[1m[92m  Downloaded[0m signal-hook-registry v1.4.8
-[1m[92m  Downloaded[0m strum_macros v0.26.4
-[1m[92m  Downloaded[0m synstructure v0.13.2
-[1m[92m  Downloaded[0m getrandom v0.2.17
-[1m[92m  Downloaded[0m getrandom v0.4.3
-[1m[92m  Downloaded[0m icu_properties v2.2.0
-[1m[92m  Downloaded[0m proc-macro2 v1.0.106
+[1m[92m  Downloaded[0m ident_case v1.0.1
 [1m[92m  Downloaded[0m zerofrom-derive v0.1.7
-[1m[92m  Downloaded[0m log v0.4.33
-[1m[92m  Downloaded[0m icu_normalizer v2.2.0
-[1m[92m  Downloaded[0m sharded-slab v0.1.7
-[1m[92m  Downloaded[0m icu_locale_core v2.2.0
-[1m[92m  Downloaded[0m icu_normalizer_data v2.2.0
+[1m[92m  Downloaded[0m iana-time-zone v0.1.65
+[1m[92m  Downloaded[0m lru v0.12.5
+[1m[92m  Downloaded[0m litemap v0.8.2
+[1m[92m  Downloaded[0m serde_urlencoded v0.7.1
+[1m[92m  Downloaded[0m thiserror v2.0.18
+[1m[92m  Downloaded[0m getrandom v0.2.17
+[1m[92m  Downloaded[0m displaydoc v0.2.6
+[1m[92m  Downloaded[0m futures-channel v0.3.32
+[1m[92m  Downloaded[0m rustc-hash v2.1.3
+[1m[92m  Downloaded[0m tinyvec_macros v0.1.1
+[1m[92m  Downloaded[0m tower-service v0.3.3
+[1m[92m  Downloaded[0m parking_lot v0.12.5
+[1m[92m  Downloaded[0m zerofrom v0.1.8
+[1m[92m  Downloaded[0m quinn-udp v0.5.15
+[1m[92m  Downloaded[0m toml_datetime v0.6.11
+[1m[92m  Downloaded[0m tower-layer v0.3.3
+[1m[92m  Downloaded[0m httparse v1.10.1
+[1m[92m  Downloaded[0m once_cell v1.21.4
+[1m[92m  Downloaded[0m toml_write v0.1.2
+[1m[92m  Downloaded[0m try-lock v0.2.5
+[1m[92m  Downloaded[0m chacha20 v0.10.1
+[1m[92m  Downloaded[0m getrandom v0.4.3
+[1m[92m  Downloaded[0m serde_spanned v0.6.9
+[1m[92m  Downloaded[0m bitflags v2.13.1
+[1m[92m  Downloaded[0m icu_properties v2.2.0
+[1m[92m  Downloaded[0m strum_macros v0.26.4
 [1m[92m  Downloaded[0m icu_provider v2.2.0
 [1m[92m  Downloaded[0m num-traits v0.2.19
+[1m[92m  Downloaded[0m parking_lot_core v0.9.12
+[1m[92m  Downloaded[0m slab v0.4.12
+[1m[92m  Downloaded[0m icu_normalizer v2.2.0
+[1m[92m  Downloaded[0m log v0.4.33
+[1m[92m  Downloaded[0m clap v4.6.2
+[1m[92m  Downloaded[0m anyhow v1.0.103
+[1m[92m  Downloaded[0m icu_normalizer_data v2.2.0
+[1m[92m  Downloaded[0m proc-macro2 v1.0.106
+[1m[92m  Downloaded[0m shlex v2.0.1
+[1m[92m  Downloaded[0m signal-hook-registry v1.4.8
+[1m[92m  Downloaded[0m static_assertions v1.1.0
+[1m[92m  Downloaded[0m synstructure v0.13.2
 [1m[92m  Downloaded[0m base64 v0.22.1
-[1m[92m  Downloaded[0m cc v1.2.67
-[1m[92m  Downloaded[0m darling_core v0.23.0
-[1m[92m  Downloaded[0m signal-hook-mio v0.2.5
-[1m[92m  Downloaded[0m compact_str v0.8.2
-[1m[92m  Downloaded[0m icu_collections v2.2.0
-[1m[92m  Downloaded[0m serde_derive v1.0.228
 [1m[92m  Downloaded[0m bytes v1.12.1
-[1m[92m  Downloaded[0m http v1.4.2
-[1m[92m  Downloaded[0m memchr v2.8.3
-[1m[92m  Downloaded[0m mio v1.2.2
+[1m[92m  Downloaded[0m icu_locale_core v2.2.0
+[1m[92m  Downloaded[0m zerovec-derive v0.11.3
+[1m[92m  Downloaded[0m zmij v1.0.23
+[1m[92m  Downloaded[0m darling_core v0.23.0
+[1m[92m  Downloaded[0m thiserror-impl v2.0.18
+[1m[92m  Downloaded[0m tracing-log v0.2.0
+[1m[92m  Downloaded[0m compact_str v0.8.2
 [1m[92m  Downloaded[0m quinn v0.11.11
-[1m[92m  Downloaded[0m rand v0.10.2
-[1m[92m  Downloaded[0m strum v0.26.3
-[1m[92m  Downloaded[0m toml_edit v0.22.27
-[1m[92m  Downloaded[0m tracing-core v0.1.36
+[1m[92m  Downloaded[0m tinystr v0.8.3
+[1m[92m  Downloaded[0m icu_collections v2.2.0
+[1m[92m  Downloaded[0m zeroize v1.9.0
+[1m[92m  Downloaded[0m writeable v0.6.3
+[1m[92m  Downloaded[0m mio v1.2.2
 [1m[92m  Downloaded[0m hyper-util v0.1.20
 [1m[92m  Downloaded[0m indexmap v2.14.0
+[1m[92m  Downloaded[0m cc v1.2.67
+[1m[92m  Downloaded[0m memchr v2.8.3
+[1m[92m  Downloaded[0m rand v0.10.2
+[1m[92m  Downloaded[0m aho-corasick v1.1.4
+[1m[92m  Downloaded[0m http v1.4.2
+[1m[92m  Downloaded[0m idna v1.1.0
 [1m[92m  Downloaded[0m crossterm v0.28.1
 [1m[92m  Downloaded[0m hashbrown v0.15.5
-[1m[92m  Downloaded[0m hashbrown v0.17.1
-[1m[92m  Downloaded[0m idna v1.1.0
+[1m[92m  Downloaded[0m hyper v1.10.1
 [1m[92m  Downloaded[0m itertools v0.13.0
+[1m[92m  Downloaded[0m tracing-attributes v0.1.31
+[1m[92m  Downloaded[0m futures-util v0.3.32
+[1m[92m  Downloaded[0m icu_properties_data v2.2.0
 [1m[92m  Downloaded[0m reqwest v0.12.28
 [1m[92m  Downloaded[0m clap_builder v4.6.2
-[1m[92m  Downloaded[0m hyper v1.10.1
-[1m[92m  Downloaded[0m icu_properties_data v2.2.0
-[1m[92m  Downloaded[0m futures-util v0.3.32
-[1m[92m  Downloaded[0m sync_wrapper v1.0.2
-[1m[92m  Downloaded[0m tinyvec_macros v0.1.1
-[1m[92m  Downloaded[0m serde_spanned v0.6.9
-[1m[92m  Downloaded[0m try-lock v0.2.5
-[1m[92m  Downloaded[0m utf8_iter v1.0.4
+[1m[92m  Downloaded[0m hashbrown v0.17.1
+[1m[92m  Downloaded[0m toml v0.8.23
+[1m[92m  Downloaded[0m yoke v0.8.3
 [1m[92m  Downloaded[0m chrono v0.4.45
 [1m[92m  Downloaded[0m quinn-proto v0.11.16
-[1m[92m  Downloaded[0m regex-syntax v0.8.11
-[1m[92m  Downloaded[0m rustls v0.23.42
-[1m[92m  Downloaded[0m toml_datetime v0.6.11
-[1m[92m  Downloaded[0m tower-service v0.3.3
-[1m[92m  Downloaded[0m untrusted v0.9.0
-[1m[92m  Downloaded[0m strsim v0.11.1
-[1m[92m  Downloaded[0m tower-layer v0.3.3
-[1m[92m  Downloaded[0m stable_deref_trait v1.2.1
-[1m[92m  Downloaded[0m want v0.3.1
-[1m[92m  Downloaded[0m ratatui v0.29.0
-[1m[92m  Downloaded[0m regex-automata v0.4.16
-[1m[92m  Downloaded[0m libc v0.2.186
-[1m[92m  Downloaded[0m subtle v2.6.1
-[1m[92m  Downloaded[0m zeroize v1.9.0
-[1m[92m  Downloaded[0m zerovec-derive v0.11.3
-[1m[92m  Downloaded[0m ring v0.17.14
-[1m[92m  Downloaded[0m linux-raw-sys v0.4.15
-[1m[92m  Downloaded[0m tinystr v0.8.3
-[1m[92m  Downloaded[0m static_assertions v1.1.0
-[1m[92m  Downloaded[0m thiserror v2.0.18
-[1m[92m  Downloaded[0m thiserror-impl v2.0.18
-[1m[92m  Downloaded[0m utf8parse v0.2.2
-[1m[92m  Downloaded[0m tracing-log v0.2.0
-[1m[92m  Downloaded[0m writeable v0.6.3
-[1m[92m  Downloaded[0m yoke-derive v0.8.2
-[1m[92m  Downloaded[0m rustversion v1.0.23
-[1m[92m  Downloaded[0m zmij v1.0.23
-[1m[92m  Downloaded[0m unicode-ident v1.0.24
-[1m[92m  Downloaded[0m smallvec v1.15.2
-[1m[92m  Downloaded[0m toml v0.8.23
-[1m[92m  Downloaded[0m tracing-attributes v0.1.31
-[1m[92m  Downloaded[0m yoke v0.8.3
 [1m[92m  Downloaded[0m tokio-rustls v0.26.4
-[1m[92m  Downloaded[0m serde_core v1.0.228
-[1m[92m  Downloaded[0m shlex v2.0.1
-[1m[92m  Downloaded[0m tinyvec v1.12.0
 [1m[92m  Downloaded[0m ryu v1.0.23
 [1m[92m  Downloaded[0m signal-hook v0.3.18
 [1m[92m  Downloaded[0m socket2 v0.6.5
-[1m[92m  Downloaded[0m serde v1.0.228
-[1m[92m  Downloaded[0m url v2.5.8
+[1m[92m  Downloaded[0m serde_derive v1.0.228
+[1m[92m  Downloaded[0m sharded-slab v0.1.7
+[1m[92m  Downloaded[0m tracing-core v0.1.36
+[1m[92m  Downloaded[0m unicode-ident v1.0.24
+[1m[92m  Downloaded[0m ratatui v0.29.0
+[1m[92m  Downloaded[0m smallvec v1.15.2
+[1m[92m  Downloaded[0m tinyvec v1.12.0
+[1m[92m  Downloaded[0m libc v0.2.186
+[1m[92m  Downloaded[0m serde_core v1.0.228
+[1m[92m  Downloaded[0m toml_edit v0.22.27
 [1m[92m  Downloaded[0m zerotrie v0.2.4
-[1m[92m  Downloaded[0m rustls-webpki v0.103.13
+[1m[92m  Downloaded[0m linux-raw-sys v0.4.15
+[1m[92m  Downloaded[0m url v2.5.8
+[1m[92m  Downloaded[0m serde v1.0.228
+[1m[92m  Downloaded[0m unicode-segmentation v1.13.3
 [1m[92m  Downloaded[0m tower v0.5.3
 [1m[92m  Downloaded[0m zerovec v0.11.6
-[1m[92m  Downloaded[0m tower-http v0.6.11
 [1m[92m  Downloaded[0m serde_json v1.0.150
-[1m[92m  Downloaded[0m webpki-roots v1.0.8
+[1m[92m  Downloaded[0m tower-http v0.6.11
 [1m[92m  Downloaded[0m winnow v0.7.15
 [1m[92m  Downloaded[0m tracing-subscriber v0.3.23
+[1m[92m  Downloaded[0m webpki-roots v1.0.8
 [1m[92m  Downloaded[0m unicode-width v0.1.14
 [1m[92m  Downloaded[0m unicode-width v0.2.0
+[1m[92m  Downloaded[0m rustls v0.23.42
 [1m[92m  Downloaded[0m syn v2.0.119
+[1m[92m  Downloaded[0m regex-syntax v0.8.11
 [1m[92m  Downloaded[0m rustix v0.38.44
 [1m[92m  Downloaded[0m tracing v0.1.44
+[1m[92m  Downloaded[0m regex-automata v0.4.16
 [1m[92m  Downloaded[0m tokio v1.52.4
+[1m[92m  Downloaded[0m ring v0.17.14
 [1m[92m   Compiling[0m proc-macro2 v1.0.106
-[1m[92m   Compiling[0m unicode-ident v1.0.24
 [1m[92m   Compiling[0m quote v1.0.46
+[1m[92m   Compiling[0m unicode-ident v1.0.24
 [1m[92m   Compiling[0m libc v0.2.186
 [1m[92m    Checking[0m cfg-if v1.0.4
 [1m[92m    Checking[0m itoa v1.0.18
-[1m[92m   Compiling[0m serde_core v1.0.228
 [1m[92m    Checking[0m smallvec v1.15.2
+[1m[92m   Compiling[0m serde_core v1.0.228
 [1m[92m   Compiling[0m serde v1.0.228
 [1m[92m    Checking[0m log v0.4.33
 [1m[92m    Checking[0m stable_deref_trait v1.2.1
-[1m[92m   Compiling[0m syn v2.0.119
 [1m[92m   Compiling[0m parking_lot_core v0.9.12
-[1m[92m    Checking[0m scopeguard v1.2.0
+[1m[92m   Compiling[0m syn v2.0.119
 [1m[92m    Checking[0m pin-project-lite v0.2.17
+[1m[92m    Checking[0m scopeguard v1.2.0
 [1m[92m    Checking[0m lock_api v0.4.14
 [1m[92m    Checking[0m errno v0.3.14
-[1m[92m    Checking[0m signal-hook-registry v1.4.8
 [1m[92m    Checking[0m mio v1.2.2
+[1m[92m    Checking[0m signal-hook-registry v1.4.8
 [1m[92m    Checking[0m bytes v1.12.1
 [1m[92m    Checking[0m parking_lot v0.12.5
 [1m[92m   Compiling[0m zmij v1.0.23
 [1m[92m   Compiling[0m serde_json v1.0.150
 [1m[92m    Checking[0m socket2 v0.6.5
+[1m[92m   Compiling[0m find-msvc-tools v0.1.9
 [1m[92m    Checking[0m memchr v2.8.3
 [1m[92m    Checking[0m futures-core v0.3.32
-[1m[92m   Compiling[0m find-msvc-tools v0.1.9
 [1m[92m   Compiling[0m autocfg v1.5.1
 [1m[92m   Compiling[0m shlex v2.0.1
 [1m[92m   Compiling[0m cc v1.2.67
 [1m[92m   Compiling[0m num-traits v0.2.19
 [1m[92m    Checking[0m litemap v0.8.2
-[1m[92m    Checking[0m writeable v0.6.3
 [1m[92m    Checking[0m once_cell v1.21.4
-[1m[92m    Checking[0m utf8_iter v1.0.4
-[1m[92m   Compiling[0m icu_normalizer_data v2.2.0
+[1m[92m    Checking[0m writeable v0.6.3
 [1m[92m   Compiling[0m icu_properties_data v2.2.0
+[1m[92m   Compiling[0m icu_normalizer_data v2.2.0
+[1m[92m    Checking[0m utf8_iter v1.0.4
 [1m[92m    Checking[0m http v1.4.2
-[1m[92m    Checking[0m percent-encoding v2.3.2
-[1m[92m    Checking[0m iana-time-zone v0.1.65
-[1m[92m    Checking[0m zeroize v1.9.0
 [1m[92m   Compiling[0m ring v0.17.14
+[1m[92m    Checking[0m zeroize v1.9.0
+[1m[92m    Checking[0m iana-time-zone v0.1.65
+[1m[92m    Checking[0m percent-encoding v2.3.2
 [1m[92m    Checking[0m http-body v1.1.0
 [1m[92m    Checking[0m rustls-pki-types v1.15.0
 [1m[92m    Checking[0m tracing-core v0.1.36
 [1m[92m    Checking[0m getrandom v0.2.17
-[1m[92m    Checking[0m slab v0.4.12
-[1m[92m    Checking[0m untrusted v0.9.0
-[1m[92m    Checking[0m futures-task v0.3.32
 [1m[92m   Compiling[0m httparse v1.10.1
 [1m[92m   Compiling[0m synstructure v0.13.2
+[1m[92m    Checking[0m futures-task v0.3.32
+[1m[92m    Checking[0m untrusted v0.9.0
+[1m[92m    Checking[0m slab v0.4.12
 [1m[92m    Checking[0m futures-util v0.3.32
 [1m[92m   Compiling[0m rustls v0.23.42
+[1m[92m    Checking[0m try-lock v0.2.5
 [1m[92m    Checking[0m bitflags v2.13.1
 [1m[92m    Checking[0m tower-service v0.3.3
-[1m[92m    Checking[0m try-lock v0.2.5
 [1m[92m    Checking[0m want v0.3.1
 [1m[92m    Checking[0m form_urlencoded v1.2.2
 [1m[92m    Checking[0m futures-channel v0.3.32
 [1m[92m    Checking[0m subtle v2.6.1
-[1m[92m    Checking[0m ryu v1.0.23
 [1m[92m    Checking[0m atomic-waker v1.1.2
+[1m[92m    Checking[0m ryu v1.0.23
 [1m[92m    Checking[0m sync_wrapper v1.0.2
+[1m[92m    Checking[0m tower-layer v0.3.3
 [1m[92m    Checking[0m base64 v0.22.1
 [1m[92m    Checking[0m ipnet v2.12.0
-[1m[92m    Checking[0m tower-layer v0.3.3
 [1m[92m   Compiling[0m serde_derive v1.0.228
 [1m[92m   Compiling[0m zerofrom-derive v0.1.7
 [1m[92m   Compiling[0m yoke-derive v0.8.2
@@ -567,412 +270,240 @@ EXIT_CODE=1
 [1m[92m    Checking[0m zerofrom v0.1.8
 [1m[92m    Checking[0m yoke v0.8.3
 [1m[92m   Compiling[0m displaydoc v0.2.6
-[1m[92m   Compiling[0m tokio-macros v2.7.0
-[1m[92m    Checking[0m zerotrie v0.2.4
-[1m[92m    Checking[0m tokio v1.52.4
 [1m[92m    Checking[0m zerovec v0.11.6
+[1m[92m   Compiling[0m tokio-macros v2.7.0
 [1m[92m    Checking[0m tinystr v0.8.3
 [1m[92m    Checking[0m icu_locale_core v2.2.0
+[1m[92m    Checking[0m tokio v1.52.4
 [1m[92m    Checking[0m potential_utf v0.1.5
+[1m[92m    Checking[0m zerotrie v0.2.4
 [1m[92m    Checking[0m icu_collections v2.2.0
 [1m[92m    Checking[0m icu_provider v2.2.0
-[1m[92m    Checking[0m chrono v0.4.45
-[1m[92m   Compiling[0m tracing-attributes v0.1.31
 [1m[92m    Checking[0m icu_properties v2.2.0
+[1m[92m    Checking[0m chrono v0.4.45
 [1m[92m    Checking[0m icu_normalizer v2.2.0
+[1m[92m   Compiling[0m tracing-attributes v0.1.31
 [1m[92m    Checking[0m gridbox-models v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-models)
 [1m[92m    Checking[0m idna_adapter v1.2.2
-[1m[92m    Checking[0m tracing v0.1.44
 [1m[92m    Checking[0m rustls-webpki v0.103.13
 [1m[92m    Checking[0m idna v1.1.0
-[1m[92m    Checking[0m webpki-roots v1.0.8
-[1m[92m   Compiling[0m thiserror v2.0.18
 [1m[92m    Checking[0m url v2.5.8
+[1m[92m    Checking[0m webpki-roots v1.0.8
 [1m[92m    Checking[0m equivalent v1.0.2
+[1m[92m   Compiling[0m thiserror v2.0.18
+[1m[92m    Checking[0m tracing v0.1.44
 [1m[92m    Checking[0m serde_urlencoded v0.7.1
 [1m[92m   Compiling[0m thiserror-impl v2.0.18
 [1m[92m    Checking[0m http-body-util v0.1.4
 [1m[92m   Compiling[0m rustversion v1.0.23
+[1m[92m   Compiling[0m anyhow v1.0.103
 [1m[92m    Checking[0m hyper v1.10.1
 [1m[92m    Checking[0m tower v0.5.3
 [1m[92m    Checking[0m tower-http v0.6.11
 [1m[92m    Checking[0m hyper-util v0.1.20
-[1m[92m   Compiling[0m anyhow v1.0.103
-[1m[92m   Compiling[0m heck v0.5.0
+[1m[92m   Compiling[0m signal-hook v0.3.18
 [1m[92m   Compiling[0m ident_case v1.0.1
+[1m[92m   Compiling[0m heck v0.5.0
 [1m[92m    Checking[0m hashbrown v0.17.1
 [1m[92m   Compiling[0m strsim v0.11.1
-[1m[92m   Compiling[0m signal-hook v0.3.18
 [1m[92m   Compiling[0m darling_core v0.23.0
-[1m[92m    Checking[0m toml_datetime v0.6.11
-[1m[92m    Checking[0m indexmap v2.14.0
-[1m[92m    Checking[0m serde_spanned v0.6.9
-[1m[92m    Checking[0m option-ext v0.2.0
-[1m[92m   Compiling[0m rustix v0.38.44
 [1m[92m    Checking[0m tokio-rustls v0.26.4
-[1m[92m    Checking[0m toml_write v0.1.2
+[1m[92m    Checking[0m indexmap v2.14.0
 [1m[92m    Checking[0m hyper-rustls v0.27.9
-[1m[92m    Checking[0m winnow v0.7.15
+[1m[92m    Checking[0m serde_spanned v0.6.9
+[1m[92m    Checking[0m toml_datetime v0.6.11
 [1m[92m    Checking[0m reqwest v0.12.28
+[1m[92m   Compiling[0m rustix v0.38.44
+[1m[92m    Checking[0m toml_write v0.1.2
+[1m[92m    Checking[0m option-ext v0.2.0
+[1m[92m    Checking[0m winnow v0.7.15
 [1m[92m    Checking[0m dirs-sys v0.5.0
-[1m[92m    Checking[0m allocator-api2 v0.2.21
+[1m[92m    Checking[0m either v1.16.0
 [1m[92m   Compiling[0m paste v1.0.15
+[1m[92m   Compiling[0m instability v0.3.12
+[1m[92m    Checking[0m allocator-api2 v0.2.21
 [1m[92m    Checking[0m foldhash v0.1.5
 [1m[92m    Checking[0m linux-raw-sys v0.4.15
-[1m[92m   Compiling[0m instability v0.3.12
-[1m[92m    Checking[0m either v1.16.0
+[1m[92m    Checking[0m hashbrown v0.15.5
 [1m[92m    Checking[0m itertools v0.13.0
 [1m[92m    Checking[0m toml_edit v0.22.27
-[1m[92m    Checking[0m hashbrown v0.15.5
 [1m[92m    Checking[0m signal-hook-mio v0.2.5
-[1m[92m   Compiling[0m darling_macro v0.23.0
 [1m[92m    Checking[0m directories v6.0.0
 [1m[92m   Compiling[0m strum_macros v0.26.4
-[1m[92m    Checking[0m castaway v0.2.4
-[1m[92m    Checking[0m unicode-width v0.1.14
+[1m[92m   Compiling[0m darling_macro v0.23.0
 [1m[92m   Compiling[0m darling v0.23.0
+[1m[92m    Checking[0m castaway v0.2.4
 [1m[92m    Checking[0m static_assertions v1.1.0
+[1m[92m    Checking[0m unicode-width v0.1.14
 [1m[92m   Compiling[0m indoc v2.0.7
-[1m[92m    Checking[0m unicode-segmentation v1.13.3
 [1m[92m    Checking[0m utf8parse v0.2.2
-[1m[92m    Checking[0m anstyle-parse v1.0.0
-[1m[92m    Checking[0m unicode-truncate v1.1.0
-[1m[92m    Checking[0m compact_str v0.8.2
+[1m[92m    Checking[0m unicode-segmentation v1.13.3
 [1m[92m    Checking[0m toml v0.8.23
+[1m[92m    Checking[0m unicode-truncate v1.1.0
+[1m[92m    Checking[0m anstyle-parse v1.0.0
+[1m[92m    Checking[0m compact_str v0.8.2
 [1m[92m    Checking[0m crossterm v0.28.1
-[1m[92m    Checking[0m lru v0.12.5
-[1m[92m    Checking[0m colorchoice v1.0.5
-[1m[92m    Checking[0m cassowary v0.3.0
-[1m[92m    Checking[0m unicode-width v0.2.0
-[1m[92m    Checking[0m is_terminal_polyfill v1.70.2
-[1m[92m    Checking[0m anstyle v1.0.14
-[1m[92m    Checking[0m regex-syntax v0.8.11
-[1m[92m    Checking[0m anstyle-query v1.1.5
-[1m[92m    Checking[0m gridbox-storage v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-storage)
-[1m[92m    Checking[0m anstream v1.0.0
-[1m[92m    Checking[0m gridbox-jolpica v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-jolpica)
-[1m[92m    Checking[0m gridbox-agent v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-agent)
 [1m[92m    Checking[0m strum v0.26.3
+[1m[92m    Checking[0m lru v0.12.5
+[1m[92m    Checking[0m anstyle v1.0.14
+[1m[92m    Checking[0m anstyle-query v1.1.5
+[1m[92m    Checking[0m unicode-width v0.2.0
+[1m[92m    Checking[0m regex-syntax v0.8.11
+[1m[92m    Checking[0m is_terminal_polyfill v1.70.2
+[1m[92m    Checking[0m cassowary v0.3.0
+[1m[92m    Checking[0m colorchoice v1.0.5
+[1m[92m    Checking[0m anstream v1.0.0
+[1m[92m    Checking[0m gridbox-storage v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-storage)
 [1m[92m    Checking[0m ratatui v0.29.0
+[1m[92m    Checking[0m gridbox-agent v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-agent)
 [1m[92m    Checking[0m gridbox-openf1 v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-openf1)
+[1m[92m    Checking[0m gridbox-jolpica v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-jolpica)
 [1m[92m    Checking[0m gridbox-fastf1-client v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-fastf1-client)
 [1m[92m    Checking[0m gridbox-analysis v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-analysis)
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:51:48
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                                [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:50:52
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m50[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawRaceControl>(&format!("race_control?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                                    [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:49:46
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m48[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawLap>(&format!("laps?session_key={key}")),
-[1m[94m49[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawStint>(&format!("stints?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                              [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m50[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawRaceControl>(&format!("race_control?session_key={key}")),
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:48:44
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m48[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawLap>(&format!("laps?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                            [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:47:49
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                                 [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:46:49
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                                 [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:45:47
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                               [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[92m    Checking[0m lazy_static v1.5.0
 [1m[92m    Checking[0m clap_lex v1.1.0
-[1mFor more information about this error, try `rustc --explain E0716`.[0m
-[1m[91merror[0m: could not compile `gridbox-openf1` (lib) due to 7 previous errors
+[1m[92m    Checking[0m lazy_static v1.5.0
+[1m[92m    Checking[0m regex-automata v0.4.16
+[1m[92m    Checking[0m clap_builder v4.6.2
+[1m[92m    Checking[0m sharded-slab v0.1.7
+[1m[92m   Compiling[0m clap_derive v4.6.1
+[1m[92m    Checking[0m tracing-log v0.2.0
+[1m[92m    Checking[0m thread_local v1.1.10
+[1m[92m    Checking[0m nu-ansi-term v0.50.3
+[1m[92m    Checking[0m gridbox-tui v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-tui)
+[1m[91merror[E0283][0m[1m: type annotations needed[0m
+   [1m[94m--> [0mcrates/gridbox-tui/src/ui/live.rs:160:33
+    [1m[94m|[0m
+[1m[94m160[0m [1m[94m|[0m                     .map_or("-".into(), |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m                      [1m[94m------[0m     [1m[91m^^^^[0m
+    [1m[94m|[0m                      [1m[94m|[0m
+    [1m[94m|[0m                      [1m[94mrequired by a bound introduced by this call[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: the type must implement `Destruct`
+[1m[92mnote[0m: required by a bound in `Option::<T>::map_or`
+   [1m[94m--> [0m/rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/core/src/option.rs:1221:4
+[1m[96mhelp[0m: try using a fully qualified path to specify the expected types
+    [1m[94m|[0m
+[1m[94m160[0m [91m- [0m                    .map_or("-"[91m.into()[0m, |value| if value { "yes" } else { "no" }.into())
+[1m[94m160[0m [92m+ [0m                    .map_or([92m<&str as Into<T>>::into([0m"-"[92m)[0m, |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m
+[1m[96mhelp[0m: consider removing this method call, as the receiver has type `&'static str` and `&'static str: Destruct` trivially holds
+    [1m[94m|[0m
+[1m[94m160[0m [91m- [0m                    .map_or("-"[91m.into()[0m, |value| if value { "yes" } else { "no" }.into())
+[1m[94m160[0m [92m+ [0m                    .map_or("-", |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m
+
+[1m[91merror[E0283][0m[1m: type annotations needed[0m
+   [1m[94m--> [0mcrates/gridbox-tui/src/ui/live.rs:160:33
+    [1m[94m|[0m
+[1m[94m160[0m [1m[94m|[0m                     .map_or("-".into(), |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m                                 [1m[91m^^^^[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: multiple `impl`s satisfying `_: From<&str>` found in the following crates: `bytes`, `reqwest`, `winnow`:
+            - impl From<&'static str> for bytes::bytes::Bytes;
+            - impl From<&'static str> for reqwest::async_impl::body::Body;
+            - impl From<&'static str> for winnow::error::StrContextValue;
+    [1m[94m= [0m[1mnote[0m: required for `&str` to implement `Into<_>`
+[1m[96mhelp[0m: try using a fully qualified path to specify the expected types
+    [1m[94m|[0m
+[1m[94m160[0m [91m- [0m                    .map_or("-"[91m.into()[0m, |value| if value { "yes" } else { "no" }.into())
+[1m[94m160[0m [92m+ [0m                    .map_or([92m<&str as Into<T>>::into([0m"-"[92m)[0m, |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m
+
+[1m[91merror[E0283][0m[1m: type annotations needed[0m
+   [1m[94m--> [0mcrates/gridbox-tui/src/ui/live.rs:160:33
+    [1m[94m|[0m
+[1m[94m160[0m [1m[94m|[0m                     .map_or("-".into(), |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m                                 [1m[91m^^^^[0m                                             [1m[94m----[0m [1m[94mtype must be known at this point[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: multiple `impl`s satisfying `_: From<&str>` found in the following crates: `bytes`, `reqwest`, `winnow`:
+            - impl From<&'static str> for bytes::bytes::Bytes;
+            - impl From<&'static str> for reqwest::async_impl::body::Body;
+            - impl From<&'static str> for winnow::error::StrContextValue;
+    [1m[94m= [0m[1mnote[0m: required for `&str` to implement `Into<_>`
+[1m[96mhelp[0m: try using a fully qualified path to specify the expected types
+    [1m[94m|[0m
+[1m[94m160[0m [91m- [0m                    .map_or("-"[91m.into()[0m, |value| if value { "yes" } else { "no" }.into())
+[1m[94m160[0m [92m+ [0m                    .map_or([92m<&str as Into<T>>::into([0m"-"[92m)[0m, |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m
+
+[1m[92m    Checking[0m matchers v0.2.0
+[1mFor more information about this error, try `rustc --explain E0283`.[0m
+[1m[91merror[0m: could not compile `gridbox-tui` (lib) due to 3 previous errors
 [1m[33mwarning[0m: build failed, waiting for other jobs to finish...
+[1m[91merror[0m: could not compile `gridbox-tui` (lib test) due to 3 previous errors
 EXIT_CODE=101
 
 ===== CARGO CLIPPY =====
 [1m[92m    Checking[0m gridbox-models v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-models)
-[1m[92m    Checking[0m regex-automata v0.4.16
 [1m[92m    Checking[0m gridbox-fastf1-client v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-fastf1-client)
-[1m[92m    Checking[0m strsim v0.11.1
-[1m[92m    Checking[0m clap_builder v4.6.2
-[1m[92m    Checking[0m sharded-slab v0.1.7
+[1m[92m    Checking[0m clap v4.6.2
+[1m[92m    Checking[0m tracing-subscriber v0.3.23
+[1m[92m    Checking[0m gridbox-storage v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-storage)
 [1m[92m    Checking[0m gridbox-jolpica v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-jolpica)
+[1m[92m    Checking[0m gridbox-agent v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-agent)
 [1m[92m    Checking[0m gridbox-analysis v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-analysis)
 [1m[92m    Checking[0m gridbox-openf1 v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-openf1)
-[1m[92m    Checking[0m gridbox-storage v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-storage)
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:51:48
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                                [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
+[1m[92m    Checking[0m gridbox-tui v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-tui)
+[1m[91merror[E0283][0m[1m: type annotations needed[0m
+   [1m[94m--> [0mcrates/gridbox-tui/src/ui/live.rs:160:33
+    [1m[94m|[0m
+[1m[94m160[0m [1m[94m|[0m                     .map_or("-".into(), |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m                      [1m[94m------[0m     [1m[91m^^^^[0m
+    [1m[94m|[0m                      [1m[94m|[0m
+    [1m[94m|[0m                      [1m[94mrequired by a bound introduced by this call[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: the type must implement `std::marker::Destruct`
+[1m[92mnote[0m: required by a bound in `std::option::Option::<T>::map_or`
+   [1m[94m--> [0m/rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/core/src/option.rs:1221:4
+[1m[96mhelp[0m: try using a fully qualified path to specify the expected types
+    [1m[94m|[0m
+[1m[94m160[0m [91m- [0m                    .map_or("-"[91m.into()[0m, |value| if value { "yes" } else { "no" }.into())
+[1m[94m160[0m [92m+ [0m                    .map_or([92m<&str as std::convert::Into<T>>::into([0m"-"[92m)[0m, |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m
+[1m[96mhelp[0m: consider removing this method call, as the receiver has type `&'static str` and `&'static str: std::marker::Destruct` trivially holds
+    [1m[94m|[0m
+[1m[94m160[0m [91m- [0m                    .map_or("-"[91m.into()[0m, |value| if value { "yes" } else { "no" }.into())
+[1m[94m160[0m [92m+ [0m                    .map_or("-", |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m
 
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:50:52
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m50[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawRaceControl>(&format!("race_control?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                                    [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
+[1m[91merror[E0283][0m[1m: type annotations needed[0m
+   [1m[94m--> [0mcrates/gridbox-tui/src/ui/live.rs:160:33
+    [1m[94m|[0m
+[1m[94m160[0m [1m[94m|[0m                     .map_or("-".into(), |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m                                 [1m[91m^^^^[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: multiple `impl`s satisfying `_: std::convert::From<&str>` found in the following crates: `bytes`, `reqwest`, `winnow`:
+            - impl std::convert::From<&'static str> for bytes::bytes::Bytes;
+            - impl std::convert::From<&'static str> for reqwest::async_impl::body::Body;
+            - impl std::convert::From<&'static str> for winnow::error::StrContextValue;
+    [1m[94m= [0m[1mnote[0m: required for `&str` to implement `std::convert::Into<_>`
+[1m[96mhelp[0m: try using a fully qualified path to specify the expected types
+    [1m[94m|[0m
+[1m[94m160[0m [91m- [0m                    .map_or("-"[91m.into()[0m, |value| if value { "yes" } else { "no" }.into())
+[1m[94m160[0m [92m+ [0m                    .map_or([92m<&str as std::convert::Into<T>>::into([0m"-"[92m)[0m, |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m
 
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:49:46
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m48[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawLap>(&format!("laps?session_key={key}")),
-[1m[94m49[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawStint>(&format!("stints?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                              [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m50[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawRaceControl>(&format!("race_control?session_key={key}")),
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
+[1m[91merror[E0283][0m[1m: type annotations needed[0m
+   [1m[94m--> [0mcrates/gridbox-tui/src/ui/live.rs:160:33
+    [1m[94m|[0m
+[1m[94m160[0m [1m[94m|[0m                     .map_or("-".into(), |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m                                 [1m[91m^^^^[0m                                             [1m[94m----[0m [1m[94mtype must be known at this point[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: multiple `impl`s satisfying `_: std::convert::From<&str>` found in the following crates: `bytes`, `reqwest`, `winnow`:
+            - impl std::convert::From<&'static str> for bytes::bytes::Bytes;
+            - impl std::convert::From<&'static str> for reqwest::async_impl::body::Body;
+            - impl std::convert::From<&'static str> for winnow::error::StrContextValue;
+    [1m[94m= [0m[1mnote[0m: required for `&str` to implement `std::convert::Into<_>`
+[1m[96mhelp[0m: try using a fully qualified path to specify the expected types
+    [1m[94m|[0m
+[1m[94m160[0m [91m- [0m                    .map_or("-"[91m.into()[0m, |value| if value { "yes" } else { "no" }.into())
+[1m[94m160[0m [92m+ [0m                    .map_or([92m<&str as std::convert::Into<T>>::into([0m"-"[92m)[0m, |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m
 
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:48:44
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m48[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawLap>(&format!("laps?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                            [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:47:49
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                                 [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:46:49
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                                 [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:45:47
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                               [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[0m[1m: this `impl` can be derived[0m
-  [1m[94m--> [0mcrates/gridbox-storage/src/config.rs:15:1
-   [1m[94m|[0m
-[1m[94m15[0m [1m[94m|[0m [1m[91m/[0m impl Default for Config {
-[1m[94m16[0m [1m[94m|[0m [1m[91m|[0m     fn default() -> Self {
-[1m[94m17[0m [1m[94m|[0m [1m[91m|[0m         Self {
-[1m[94m18[0m [1m[94m|[0m [1m[91m|[0m             llm: LlmConfig::default(),
-[1m[94m...[0m  [1m[91m|[0m
-[1m[94m24[0m [1m[94m|[0m [1m[91m|[0m }
-   [1m[94m|[0m [1m[91m|_^[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mhelp[0m: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#derivable_impls
-   [1m[94m= [0m[1mnote[0m: `-D clippy::derivable-impls` implied by `-D warnings`
-   [1m[94m= [0m[1mhelp[0m: to override `-D warnings` add `#[allow(clippy::derivable_impls)]`
-[1m[96mhelp[0m: replace the manual implementation with a derive attribute
-   [1m[94m|[0m
-[1m[94m 8[0m [92m+ #[derive(Default)][0m
-[1m[94m 9[0m [1m[94m|[0m pub struct Config {
-   [1m[94m|[0m
-
-[1m[91merror[0m: could not compile `gridbox-storage` (lib) due to 1 previous error
+[1mFor more information about this error, try `rustc --explain E0283`.[0m
+[1m[91merror[0m: could not compile `gridbox-tui` (lib) due to 3 previous errors
 [1m[33mwarning[0m: build failed, waiting for other jobs to finish...
-[1mFor more information about this error, try `rustc --explain E0716`.[0m
-[1m[91merror[0m: could not compile `gridbox-openf1` (lib) due to 7 previous errors
+[1m[91merror[0m: could not compile `gridbox-tui` (lib test) due to 3 previous errors
 EXIT_CODE=101
 
 ===== CARGO TEST =====
@@ -983,31 +514,31 @@ EXIT_CODE=101
 [1m[92m   Compiling[0m smallvec v1.15.2
 [1m[92m   Compiling[0m log v0.4.33
 [1m[92m   Compiling[0m zerofrom v0.1.8
-[1m[92m   Compiling[0m stable_deref_trait v1.2.1
 [1m[92m   Compiling[0m pin-project-lite v0.2.17
 [1m[92m   Compiling[0m scopeguard v1.2.0
+[1m[92m   Compiling[0m stable_deref_trait v1.2.1
 [1m[92m   Compiling[0m yoke v0.8.3
 [1m[92m   Compiling[0m lock_api v0.4.14
 [1m[92m   Compiling[0m zmij v1.0.23
-[1m[92m   Compiling[0m bytes v1.12.1
 [1m[92m   Compiling[0m memchr v2.8.3
+[1m[92m   Compiling[0m bytes v1.12.1
 [1m[92m   Compiling[0m errno v0.3.14
 [1m[92m   Compiling[0m signal-hook-registry v1.4.8
 [1m[92m   Compiling[0m parking_lot_core v0.9.12
 [1m[92m   Compiling[0m mio v1.2.2
-[1m[92m   Compiling[0m parking_lot v0.12.5
 [1m[92m   Compiling[0m zerovec v0.11.6
+[1m[92m   Compiling[0m parking_lot v0.12.5
 [1m[92m   Compiling[0m socket2 v0.6.5
 [1m[92m   Compiling[0m num-traits v0.2.19
 [1m[92m   Compiling[0m iana-time-zone v0.1.65
+[1m[92m   Compiling[0m tokio v1.52.4
 [1m[92m   Compiling[0m serde v1.0.228
 [1m[92m   Compiling[0m serde_json v1.0.150
-[1m[92m   Compiling[0m tokio v1.52.4
 [1m[92m   Compiling[0m futures-core v0.3.32
 [1m[92m   Compiling[0m tinystr v0.8.3
-[1m[92m   Compiling[0m litemap v0.8.2
-[1m[92m   Compiling[0m chrono v0.4.45
 [1m[92m   Compiling[0m writeable v0.6.3
+[1m[92m   Compiling[0m chrono v0.4.45
+[1m[92m   Compiling[0m litemap v0.8.2
 [1m[92m   Compiling[0m once_cell v1.21.4
 [1m[92m   Compiling[0m icu_locale_core v2.2.0
 [1m[92m   Compiling[0m potential_utf v0.1.5
@@ -1017,24 +548,24 @@ EXIT_CODE=101
 [1m[92m   Compiling[0m icu_provider v2.2.0
 [1m[92m   Compiling[0m gridbox-models v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-models)
 [1m[92m   Compiling[0m http v1.4.2
-[1m[92m   Compiling[0m percent-encoding v2.3.2
 [1m[92m   Compiling[0m zeroize v1.9.0
+[1m[92m   Compiling[0m percent-encoding v2.3.2
 [1m[92m   Compiling[0m rustls-pki-types v1.15.0
 [1m[92m   Compiling[0m icu_properties_data v2.2.0
 [1m[92m   Compiling[0m icu_normalizer_data v2.2.0
 [1m[92m   Compiling[0m tracing-core v0.1.36
 [1m[92m   Compiling[0m http-body v1.1.0
 [1m[92m   Compiling[0m getrandom v0.2.17
-[1m[92m   Compiling[0m futures-task v0.3.32
 [1m[92m   Compiling[0m slab v0.4.12
 [1m[92m   Compiling[0m untrusted v0.9.0
-[1m[92m   Compiling[0m icu_normalizer v2.2.0
+[1m[92m   Compiling[0m futures-task v0.3.32
 [1m[92m   Compiling[0m ring v0.17.14
+[1m[92m   Compiling[0m icu_normalizer v2.2.0
 [1m[92m   Compiling[0m futures-util v0.3.32
 [1m[92m   Compiling[0m icu_properties v2.2.0
-[1m[92m   Compiling[0m bitflags v2.13.1
 [1m[92m   Compiling[0m try-lock v0.2.5
 [1m[92m   Compiling[0m tower-service v0.3.3
+[1m[92m   Compiling[0m bitflags v2.13.1
 [1m[92m   Compiling[0m want v0.3.1
 [1m[92m   Compiling[0m tracing v0.1.44
 [1m[92m   Compiling[0m idna_adapter v1.2.2
@@ -1042,36 +573,36 @@ EXIT_CODE=101
 [1m[92m   Compiling[0m httparse v1.10.1
 [1m[92m   Compiling[0m form_urlencoded v1.2.2
 [1m[92m   Compiling[0m futures-channel v0.3.32
-[1m[92m   Compiling[0m subtle v2.6.1
 [1m[92m   Compiling[0m atomic-waker v1.1.2
 [1m[92m   Compiling[0m ryu v1.0.23
+[1m[92m   Compiling[0m subtle v2.6.1
 [1m[92m   Compiling[0m rustls v0.23.42
 [1m[92m   Compiling[0m hyper v1.10.1
 [1m[92m   Compiling[0m idna v1.1.0
 [1m[92m   Compiling[0m sync_wrapper v1.0.2
-[1m[92m   Compiling[0m base64 v0.22.1
 [1m[92m   Compiling[0m tower-layer v0.3.3
+[1m[92m   Compiling[0m base64 v0.22.1
 [1m[92m   Compiling[0m ipnet v2.12.0
 [1m[92m   Compiling[0m tower v0.5.3
-[1m[92m   Compiling[0m url v2.5.8
 [1m[92m   Compiling[0m hyper-util v0.1.20
+[1m[92m   Compiling[0m url v2.5.8
 [1m[92m   Compiling[0m webpki-roots v1.0.8
 [1m[92m   Compiling[0m serde_urlencoded v0.7.1
-[1m[92m   Compiling[0m tower-http v0.6.11
 [1m[92m   Compiling[0m http-body-util v0.1.4
+[1m[92m   Compiling[0m tower-http v0.6.11
 [1m[92m   Compiling[0m thiserror v2.0.18
 [1m[92m   Compiling[0m equivalent v1.0.2
 [1m[92m   Compiling[0m strsim v0.11.1
 [1m[92m   Compiling[0m anyhow v1.0.103
 [1m[92m   Compiling[0m hashbrown v0.17.1
-[1m[92m   Compiling[0m toml_datetime v0.6.11
 [1m[92m   Compiling[0m tokio-rustls v0.26.4
-[1m[92m   Compiling[0m serde_spanned v0.6.9
+[1m[92m   Compiling[0m toml_datetime v0.6.11
 [1m[92m   Compiling[0m hyper-rustls v0.27.9
-[1m[92m   Compiling[0m option-ext v0.2.0
-[1m[92m   Compiling[0m toml_write v0.1.2
-[1m[92m   Compiling[0m indexmap v2.14.0
+[1m[92m   Compiling[0m serde_spanned v0.6.9
 [1m[92m   Compiling[0m reqwest v0.12.28
+[1m[92m   Compiling[0m option-ext v0.2.0
+[1m[92m   Compiling[0m indexmap v2.14.0
+[1m[92m   Compiling[0m toml_write v0.1.2
 [1m[92m   Compiling[0m winnow v0.7.15
 [1m[92m   Compiling[0m darling_core v0.23.0
 [1m[92m   Compiling[0m toml_edit v0.22.27
@@ -1079,281 +610,115 @@ EXIT_CODE=101
 [1m[92m   Compiling[0m darling_macro v0.23.0
 [1m[92m   Compiling[0m directories v6.0.0
 [1m[92m   Compiling[0m signal-hook v0.3.18
-[1m[92m   Compiling[0m either v1.16.0
+[1m[92m   Compiling[0m foldhash v0.1.5
 [1m[92m   Compiling[0m allocator-api2 v0.2.21
 [1m[92m   Compiling[0m toml v0.8.23
 [1m[92m   Compiling[0m linux-raw-sys v0.4.15
-[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m either v1.16.0
 [1m[92m   Compiling[0m rustix v0.38.44
-[1m[92m   Compiling[0m hashbrown v0.15.5
 [1m[92m   Compiling[0m itertools v0.13.0
+[1m[92m   Compiling[0m hashbrown v0.15.5
 [1m[92m   Compiling[0m signal-hook-mio v0.2.5
 [1m[92m   Compiling[0m darling v0.23.0
 [1m[92m   Compiling[0m castaway v0.2.4
 [1m[92m   Compiling[0m unicode-segmentation v1.13.3
-[1m[92m   Compiling[0m unicode-width v0.1.14
 [1m[92m   Compiling[0m static_assertions v1.1.0
+[1m[92m   Compiling[0m unicode-width v0.1.14
 [1m[92m   Compiling[0m compact_str v0.8.2
 [1m[92m   Compiling[0m instability v0.3.12
-[1m[92m   Compiling[0m strum v0.26.3
 [1m[92m   Compiling[0m unicode-truncate v1.1.0
+[1m[92m   Compiling[0m strum v0.26.3
 [1m[92m   Compiling[0m crossterm v0.28.1
 [1m[92m   Compiling[0m lru v0.12.5
 [1m[92m   Compiling[0m gridbox-storage v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-storage)
 [1m[92m   Compiling[0m gridbox-agent v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-agent)
-[1m[92m   Compiling[0m gridbox-jolpica v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-jolpica)
 [1m[92m   Compiling[0m gridbox-openf1 v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-openf1)
+[1m[92m   Compiling[0m gridbox-jolpica v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-jolpica)
 [1m[92m   Compiling[0m gridbox-fastf1-client v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-fastf1-client)
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:51:48
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                                [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:50:52
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m50[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawRaceControl>(&format!("race_control?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                                    [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:49:46
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m48[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawLap>(&format!("laps?session_key={key}")),
-[1m[94m49[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawStint>(&format!("stints?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                              [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m50[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawRaceControl>(&format!("race_control?session_key={key}")),
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:48:44
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m48[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawLap>(&format!("laps?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                            [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:47:49
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                                 [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:46:49
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                                 [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
-[1m[91merror[E0716][0m[1m: temporary value dropped while borrowed[0m
-  [1m[94m--> [0mcrates/gridbox-openf1/src/client.rs:45:47
-   [1m[94m|[0m
-[1m[94m44[0m [1m[94m|[0m           let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-   [1m[94m|[0m [1m[94m ____________________________________________________________________________________-[0m
-[1m[94m45[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-   [1m[94m|[0m [1m[94m|[0m                                               [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mcreates a temporary value which is freed while still in use[0m
-[1m[94m46[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-[1m[94m47[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-[1m[94m...[0m  [1m[94m|[0m
-[1m[94m51[0m [1m[94m|[0m [1m[94m|[0m             self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
-[1m[94m52[0m [1m[94m|[0m [1m[94m|[0m         );
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m-[0m
-   [1m[94m|[0m [1m[94m|[0m         [1m[94m|[0m
-   [1m[94m|[0m [1m[94m|_________temporary value is freed at the end of this statement[0m
-   [1m[94m|[0m           [1m[94mborrow later used here[0m
-   [1m[94m|[0m
-   [1m[94m= [0m[1mnote[0m: consider using a `let` binding to create a longer lived value
-
 [1m[92m   Compiling[0m gridbox-analysis v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-analysis)
-[1mFor more information about this error, try `rustc --explain E0716`.[0m
-[1m[91merror[0m: could not compile `gridbox-openf1` (lib) due to 7 previous errors
+[1m[92m   Compiling[0m cassowary v0.3.0
+[1m[92m   Compiling[0m utf8parse v0.2.2
+[1m[92m   Compiling[0m unicode-width v0.2.0
+[1m[92m   Compiling[0m anstyle-parse v1.0.0
+[1m[92m   Compiling[0m anstyle v1.0.14
+[1m[92m   Compiling[0m ratatui v0.29.0
+[1m[92m   Compiling[0m anstyle-query v1.1.5
+[1m[92m   Compiling[0m regex-syntax v0.8.11
+[1m[92m   Compiling[0m is_terminal_polyfill v1.70.2
+[1m[92m   Compiling[0m colorchoice v1.0.5
+[1m[92m   Compiling[0m anstream v1.0.0
+[1m[92m   Compiling[0m lazy_static v1.5.0
+[1m[92m   Compiling[0m clap_lex v1.1.0
+[1m[92m   Compiling[0m clap_builder v4.6.2
+[1m[92m   Compiling[0m sharded-slab v0.1.7
+[1m[92m   Compiling[0m tracing-log v0.2.0
+[1m[92m   Compiling[0m thread_local v1.1.10
+[1m[92m   Compiling[0m regex-automata v0.4.16
+[1m[92m   Compiling[0m gridbox-tui v0.1.0 (/home/runner/work/GridBox/GridBox/crates/gridbox-tui)
+[1m[91merror[E0283][0m[1m: type annotations needed[0m
+   [1m[94m--> [0mcrates/gridbox-tui/src/ui/live.rs:160:33
+    [1m[94m|[0m
+[1m[94m160[0m [1m[94m|[0m                     .map_or("-".into(), |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m                      [1m[94m------[0m     [1m[91m^^^^[0m
+    [1m[94m|[0m                      [1m[94m|[0m
+    [1m[94m|[0m                      [1m[94mrequired by a bound introduced by this call[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: the type must implement `Destruct`
+[1m[92mnote[0m: required by a bound in `Option::<T>::map_or`
+   [1m[94m--> [0m/rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/core/src/option.rs:1221:4
+[1m[96mhelp[0m: try using a fully qualified path to specify the expected types
+    [1m[94m|[0m
+[1m[94m160[0m [91m- [0m                    .map_or("-"[91m.into()[0m, |value| if value { "yes" } else { "no" }.into())
+[1m[94m160[0m [92m+ [0m                    .map_or([92m<&str as Into<T>>::into([0m"-"[92m)[0m, |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m
+[1m[96mhelp[0m: consider removing this method call, as the receiver has type `&'static str` and `&'static str: Destruct` trivially holds
+    [1m[94m|[0m
+[1m[94m160[0m [91m- [0m                    .map_or("-"[91m.into()[0m, |value| if value { "yes" } else { "no" }.into())
+[1m[94m160[0m [92m+ [0m                    .map_or("-", |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m
+
+[1m[91merror[E0283][0m[1m: type annotations needed[0m
+   [1m[94m--> [0mcrates/gridbox-tui/src/ui/live.rs:160:33
+    [1m[94m|[0m
+[1m[94m160[0m [1m[94m|[0m                     .map_or("-".into(), |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m                                 [1m[91m^^^^[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: multiple `impl`s satisfying `_: From<&str>` found in the following crates: `bytes`, `reqwest`, `winnow`:
+            - impl From<&'static str> for bytes::bytes::Bytes;
+            - impl From<&'static str> for reqwest::async_impl::body::Body;
+            - impl From<&'static str> for winnow::error::StrContextValue;
+    [1m[94m= [0m[1mnote[0m: required for `&str` to implement `Into<_>`
+[1m[96mhelp[0m: try using a fully qualified path to specify the expected types
+    [1m[94m|[0m
+[1m[94m160[0m [91m- [0m                    .map_or("-"[91m.into()[0m, |value| if value { "yes" } else { "no" }.into())
+[1m[94m160[0m [92m+ [0m                    .map_or([92m<&str as Into<T>>::into([0m"-"[92m)[0m, |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m
+
+[1m[91merror[E0283][0m[1m: type annotations needed[0m
+   [1m[94m--> [0mcrates/gridbox-tui/src/ui/live.rs:160:33
+    [1m[94m|[0m
+[1m[94m160[0m [1m[94m|[0m                     .map_or("-".into(), |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m                                 [1m[91m^^^^[0m                                             [1m[94m----[0m [1m[94mtype must be known at this point[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: multiple `impl`s satisfying `_: From<&str>` found in the following crates: `bytes`, `reqwest`, `winnow`:
+            - impl From<&'static str> for bytes::bytes::Bytes;
+            - impl From<&'static str> for reqwest::async_impl::body::Body;
+            - impl From<&'static str> for winnow::error::StrContextValue;
+    [1m[94m= [0m[1mnote[0m: required for `&str` to implement `Into<_>`
+[1m[96mhelp[0m: try using a fully qualified path to specify the expected types
+    [1m[94m|[0m
+[1m[94m160[0m [91m- [0m                    .map_or("-"[91m.into()[0m, |value| if value { "yes" } else { "no" }.into())
+[1m[94m160[0m [92m+ [0m                    .map_or([92m<&str as Into<T>>::into([0m"-"[92m)[0m, |value| if value { "yes" } else { "no" }.into())
+    [1m[94m|[0m
+
+[1mFor more information about this error, try `rustc --explain E0283`.[0m
+[1m[91merror[0m: could not compile `gridbox-tui` (lib) due to 3 previous errors
 [1m[33mwarning[0m: build failed, waiting for other jobs to finish...
 EXIT_CODE=101
 
-===== UV SYNC =====
-Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
-Creating virtual environment at: .venv
-Resolved 49 packages in 794ms
-   Building gridbox-fastf1 @ file:///home/runner/work/GridBox/GridBox
-Downloading pillow (6.6MiB)
-Downloading fonttools (4.8MiB)
-Downloading cryptography (4.5MiB)
-Downloading rapidfuzz (3.0MiB)
-Downloading pydantic-core (2.0MiB)
-Downloading kiwisolver (1.4MiB)
-Downloading pygments (1.2MiB)
-Downloading pandas (11.8MiB)
-Downloading scipy (33.7MiB)
-Downloading matplotlib (9.6MiB)
-Downloading numpy (15.9MiB)
-Downloading ruff (10.9MiB)
- Downloaded kiwisolver
- Downloaded pydantic-core
- Downloaded rapidfuzz
- Downloaded pygments
- Downloaded cryptography
-      Built gridbox-fastf1 @ file:///home/runner/work/GridBox/GridBox
- Downloaded pillow
- Downloaded fonttools
- Downloaded ruff
- Downloaded matplotlib
- Downloaded numpy
- Downloaded scipy
- Downloaded pandas
-Prepared 46 packages in 1.54s
-Installed 46 packages in 55ms
- + annotated-types==0.7.0
- + attrs==26.1.0
- + cattrs==26.1.0
- + certifi==2026.6.17
- + cffi==2.1.0
- + charset-normalizer==3.4.9
- + contourpy==1.3.3
- + cryptography==49.0.0
- + cycler==0.12.1
- + fastf1==3.8.3
- + fonttools==4.63.0
- + gridbox-fastf1==0.1.0 (from file:///home/runner/work/GridBox/GridBox)
- + idna==3.18
- + iniconfig==2.3.0
- + kiwisolver==1.5.0
- + matplotlib==3.11.0
- + msgpack==1.1.2
- + numpy==2.5.1
- + packaging==26.2
- + pandas==2.3.3
- + pillow==12.3.0
- + platformdirs==4.10.0
- + pluggy==1.6.0
- + pycparser==3.0
- + pydantic==2.13.4
- + pydantic-core==2.46.4
- + pygments==2.20.0
- + pyjwt==2.13.0
- + pyparsing==3.3.2
- + pytest==9.1.1
- + python-dateutil==2.9.0.post0
- + pytz==2026.2
- + rapidfuzz==3.14.5
- + requests==2.34.2
- + requests-cache==1.3.3
- + ruff==0.15.22
- + scipy==1.18.0
- + signalrcore==1.0.2
- + six==1.17.0
- + timple==0.1.8
- + typing-extensions==4.16.0
- + typing-inspection==0.4.2
- + tzdata==2026.3
- + url-normalize==3.0.0
- + urllib3==2.7.0
- + websockets==16.1
-EXIT_CODE=0
-
 ===== RUFF =====
-UP037 [*] Remove quotes from type annotation
-  --> python/gridbox_fastf1/protocol.py:14:52
-   |
-13 |     @classmethod
-14 |     def from_dict(cls, payload: dict[str, Any]) -> "Request":
-   |                                                    ^^^^^^^^^
-15 |         request_id = payload.get("id")
-16 |         method = payload.get("method")
-   |
-help: Remove quotes
-
-UP035 [*] Import from `collections.abc` instead: `Callable`
-  --> python/gridbox_fastf1/worker.py:8:1
-   |
- 6 | import sys
- 7 | import traceback
- 8 | from typing import Any, Callable
-   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 9 |
-10 | from gridbox_fastf1.protocol import Request, failure, success
-   |
-help: Import from `collections.abc`
-
-Found 2 errors.
-[*] 2 fixable with the `--fix` option.
-EXIT_CODE=1
+All checks passed!
+EXIT_CODE=0
 
 ===== PYTEST =====
 ============================= test session starts ==============================
@@ -1365,6 +730,6 @@ collected 4 items
 
 python/tests/test_protocol.py ....                                       [100%]
 
-============================== 4 passed in 0.02s ===============================
+============================== 4 passed in 0.01s ===============================
 EXIT_CODE=0
 

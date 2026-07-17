@@ -22,14 +22,20 @@ pub fn snapshot_context(snapshot: Option<&LiveSnapshot>, selected_driver: Option
         let _ = writeln!(
             output,
             "{marker} P{} {} (#{}), gap {}, interval {}, lap {}, tyre {} age {}",
-            driver.position.map_or("?".into(), |value| value.to_string()),
+            driver
+                .position
+                .map_or("?".into(), |value| value.to_string()),
             driver.display_name(),
             driver.driver_number,
             driver.gap_to_leader.as_deref().unwrap_or("unknown"),
             driver.interval.as_deref().unwrap_or("unknown"),
-            driver.lap_number.map_or("?".into(), |value| value.to_string()),
+            driver
+                .lap_number
+                .map_or("?".into(), |value| value.to_string()),
             driver.compound.as_deref().unwrap_or("unknown"),
-            driver.tyre_age.map_or("?".into(), |value| value.to_string()),
+            driver
+                .tyre_age
+                .map_or("?".into(), |value| value.to_string()),
         );
     }
 
@@ -42,10 +48,7 @@ pub fn snapshot_context(snapshot: Option<&LiveSnapshot>, selected_driver: Option
         let _ = writeln!(
             output,
             "Weather: air {:?}C, track {:?}C, rain {:?}, humidity {:?}%",
-            weather.air_temperature,
-            weather.track_temperature,
-            weather.rainfall,
-            weather.humidity
+            weather.air_temperature, weather.track_temperature, weather.rainfall, weather.humidity
         );
     }
 

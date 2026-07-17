@@ -27,13 +27,11 @@ pub fn render(frame: &mut Frame<'_>, area: Rect, app: &App) {
     }
 
     frame.render_widget(
-        Paragraph::new(lines)
-            .wrap(Wrap { trim: false })
-            .block(
-                Block::default()
-                    .title(format!(" Local engineer · {} ", app.model))
-                    .borders(Borders::ALL),
-            ),
+        Paragraph::new(lines).wrap(Wrap { trim: false }).block(
+            Block::default()
+                .title(format!(" Local engineer · {} ", app.model))
+                .borders(Borders::ALL),
+        ),
         area,
     );
 }

@@ -19,9 +19,7 @@ impl LiveRecorder {
     pub fn record_snapshot(&self, snapshot: &LiveSnapshot) -> Result<PathBuf> {
         let slug = slugify(&format!(
             "{}-{}-{}",
-            snapshot.session.year,
-            snapshot.session.location,
-            snapshot.session.session_name
+            snapshot.session.year, snapshot.session.location, snapshot.session.session_name
         ));
         let session_dir = self.root.join(slug);
         std::fs::create_dir_all(&session_dir)

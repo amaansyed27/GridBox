@@ -42,13 +42,13 @@ impl OpenF1Client {
         let key = session.session_key;
 
         let (drivers, positions, intervals, laps, stints, race_control, weather) = tokio::join!(
-            self.get_or_default::<RawDriver>(&format!("drivers?session_key={key}")),
-            self.get_or_default::<RawPosition>(&format!("position?session_key={key}")),
-            self.get_or_default::<RawInterval>(&format!("intervals?session_key={key}")),
-            self.get_or_default::<RawLap>(&format!("laps?session_key={key}")),
-            self.get_or_default::<RawStint>(&format!("stints?session_key={key}")),
-            self.get_or_default::<RawRaceControl>(&format!("race_control?session_key={key}")),
-            self.get_or_default::<RawWeather>(&format!("weather?session_key={key}")),
+            self.get_or_default::<RawDriver>(format!("drivers?session_key={key}")),
+            self.get_or_default::<RawPosition>(format!("position?session_key={key}")),
+            self.get_or_default::<RawInterval>(format!("intervals?session_key={key}")),
+            self.get_or_default::<RawLap>(format!("laps?session_key={key}")),
+            self.get_or_default::<RawStint>(format!("stints?session_key={key}")),
+            self.get_or_default::<RawRaceControl>(format!("race_control?session_key={key}")),
+            self.get_or_default::<RawWeather>(format!("weather?session_key={key}")),
         );
 
         let mut by_number: HashMap<u32, DriverSnapshot> = drivers
@@ -145,11 +145,11 @@ impl OpenF1Client {
         })
     }
 
-    async fn get_or_default<T>(&self, path: &str) -> Vec<T>
+    async fn get_or_default<T>(&self, path: String) -> Vec<T>
     where
         T: DeserializeOwned,
     {
-        self.get(path).await.unwrap_or_default()
+        self.get(&path).await.unwrap_or_default()
     }
 
     async fn get<T>(&self, path: &str) -> Result<T, OpenF1Error>
@@ -189,11 +189,7 @@ fn placeholder_driver(number: u32) -> DriverSnapshot {
     }
 }
 
-fn latest_by_driver<T, FNumber, FDate>(
-    items: Vec<T>,
-    number: FNumber,
-    date: FDate,
-) -> Vec<T>
+fn latest_by_driver<T, FNumber, FDate>(items: Vec<T>, number: FNumber, date: FDate) -> Vec<T>
 where
     FNumber: Fn(&T) -> u32,
     FDate: Fn(&T) -> DateTime<Utc>,

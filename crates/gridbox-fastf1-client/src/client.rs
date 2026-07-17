@@ -31,12 +31,7 @@ impl FastF1Client {
         self.request("ping", json!({})).await
     }
 
-    pub async fn session_summary(
-        &self,
-        year: u16,
-        event: &str,
-        session: &str,
-    ) -> Result<Value> {
+    pub async fn session_summary(&self, year: u16, event: &str, session: &str) -> Result<Value> {
         self.request(
             "session_summary",
             json!({"year": year, "event": event, "session": session}),
@@ -107,7 +102,10 @@ impl FastF1Client {
             )
         })?;
 
-        let mut stdin = child.stdin.take().context("FastF1 worker stdin unavailable")?;
+        let mut stdin = child
+            .stdin
+            .take()
+            .context("FastF1 worker stdin unavailable")?;
         stdin.write_all(encoded.as_bytes()).await?;
         stdin.write_all(b"\n").await?;
         stdin.shutdown().await?;
