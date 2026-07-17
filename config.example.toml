@@ -13,7 +13,7 @@ record_live_sessions = true
 
 [fastf1]
 enabled = true
-python_command = "python"
+python_command = "uv"
 module = "gridbox_fastf1"
 python_root = "python"
 
