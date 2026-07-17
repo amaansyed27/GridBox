@@ -153,12 +153,8 @@ impl FastF1Client {
 }
 
 fn is_uv_command(command: &str) -> bool {
-    let executable = command
-        .rsplit(['/', '\\'])
-        .next()
-        .unwrap_or(command)
-        .strip_suffix(".exe")
-        .unwrap_or_else(|| command.rsplit(['/', '\\']).next().unwrap_or(command));
+    let executable = command.rsplit(['/', '\\']).next().unwrap_or(command);
+    let executable = executable.strip_suffix(".exe").unwrap_or(executable);
     executable.eq_ignore_ascii_case("uv")
 }
 
