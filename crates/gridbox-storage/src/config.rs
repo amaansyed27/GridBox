@@ -3,24 +3,13 @@ use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Config {
     pub llm: LlmConfig,
     pub openf1: OpenF1Config,
     pub fastf1: FastF1Config,
     pub ui: UiConfig,
-}
-
-impl Default for Config {
-    fn default() -> Self {
-        Self {
-            llm: LlmConfig::default(),
-            openf1: OpenF1Config::default(),
-            fastf1: FastF1Config::default(),
-            ui: UiConfig::default(),
-        }
-    }
 }
 
 impl Config {
