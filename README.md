@@ -18,6 +18,7 @@ GridBox is unofficial and is not associated with Formula One Licensing B.V., the
 - Full-screen Rust TUI built with Ratatui and Crossterm.
 - Automatic detection of the latest or active OpenF1 session.
 - Live timing tower assembled from positions, intervals, laps and stints.
+- A fully local moving `demo-live` session requiring no account, token or internet.
 - Race-control and weather panels.
 - Deterministic DRS, gap, tyre-age and flag strategy signals.
 - Local live-session recording as JSON Lines.
@@ -35,7 +36,7 @@ GridBox is unofficial and is not associated with Formula One Licensing B.V., the
 │ Clap commands + application bootstrap                         │
 ├───────────────────────────────────────────────────────────────┤
 │ gridbox-tui                                                   │
-│ Ratatui views, keyboard input, event loop, async task routing  │
+│ Ratatui views, keyboard input, event loop, demo-live source    │
 ├──────────────┬───────────────┬───────────────┬────────────────┤
 │ gridbox-agent│ gridbox-openf1│ gridbox-jolpica│ gridbox-analysis│
 │ Ollama local │ live/session  │ schedules      │ deterministic  │
@@ -55,9 +56,29 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for module boundaries and data 
 - Python 3.11 or 3.12.
 - `uv` for the FastF1 worker environment.
 - Ollama for local AI features.
-- Internet access only when downloading F1 data or consuming a live session.
+- Internet access only when downloading F1 data or consuming a real live session.
 
-Real-time OpenF1 data may require a paid OpenF1 subscription and token. Historical OpenF1 data from 2023 onward does not require authentication.
+Historical OpenF1 data from 2023 onward is free. OpenF1 classifies data around an active session as real-time data and currently requires a live-data subscription and token for that window.
+
+## Live modes
+
+### Free local live demo
+
+Use this first. It drives the real timing tower, weather, race-control, strategy and AI-context paths with a changing local session:
+
+```bash
+cargo run -p gridbox-cli -- demo-live
+```
+
+It is not prerecorded video and does not call a mock HTTP server. The TUI receives continuously generated typed `LiveSnapshot` values through the same event channel used by real providers.
+
+### Real session
+
+```bash
+cargo run -p gridbox-cli -- live
+```
+
+Real live mode uses the configured OpenF1 endpoint and token. GridBox does not scrape, reverse-engineer or redistribute Formula 1's official timing service. A future free provider can be added behind the provider boundary only when its API explicitly permits programmatic use.
 
 ## Setup
 
@@ -71,7 +92,7 @@ winget install Ollama.Ollama
 uv sync --extra dev
 ollama pull qwen3.5:4b
 cargo run -p gridbox-cli -- doctor
-cargo run -p gridbox-cli
+cargo run -p gridbox-cli -- demo-live
 ```
 
 Or run the bootstrap helper:
@@ -86,7 +107,7 @@ Or run the bootstrap helper:
 uv sync --extra dev
 ollama pull qwen3.5:4b
 cargo run -p gridbox-cli -- doctor
-cargo run -p gridbox-cli
+cargo run -p gridbox-cli -- demo-live
 ```
 
 Or:
@@ -99,7 +120,8 @@ Or:
 
 ```text
 gridbox                         Start the interactive workspace
-gridbox live                    Open directly in live-session mode
+gridbox demo-live               Test the complete live TUI fully locally
+gridbox live                    Open real live-session mode
 gridbox doctor                  Check storage, OpenF1, Ollama and FastF1
 gridbox schedule 2026           Print a season schedule
 gridbox analyze 2025 Monaco Q   Print a FastF1 session summary
@@ -112,7 +134,7 @@ gridbox config-path             Print the platform config path
 ```text
 /live
 /refresh
-/driver 4
+/driver 7
 /schedule 2026
 /session 2025 Monaco Q
 /compare 2025 Monaco Q NOR VER
@@ -169,6 +191,7 @@ The repository deliberately avoids one-file implementations. New providers, view
 
 ## Current limitations
 
+- A sustainable, authorized zero-cost API for full real-time F1 timing and telemetry was not identified. `demo-live` is free and local; real active-session data still needs an authorized provider.
 - OpenF1 live access depends on the account and plan associated with the supplied token.
 - Live polling currently uses REST snapshots; authenticated WebSocket/MQTT transports are a later milestone.
 - Strategy output is heuristic, not a substitute for team-grade simulation.
