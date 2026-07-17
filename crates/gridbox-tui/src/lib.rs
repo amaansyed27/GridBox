@@ -1,5 +1,6 @@
 mod app;
 mod commands;
+mod demo;
 mod events;
 mod runtime;
 mod ui;
