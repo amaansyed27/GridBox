@@ -5,7 +5,7 @@ use std::path::PathBuf;
 #[command(
     name = "gridbox",
     version,
-    about = "Local-first Formula 1 telemetry, live timing and race-engineering TUI",
+    about = "Local-first Formula 1 telemetry, race analysis and strategy TUI",
     long_about = None
 )]
 pub struct Cli {
@@ -18,11 +18,9 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum Command {
-    /// Start directly in live-session mode using the configured provider.
-    Live,
     /// Run a fully local moving live-session simulation with no API key.
     DemoLive,
-    /// Check OpenF1, Ollama, FastF1 and local storage.
+    /// Check Ollama, FastF1 and local storage.
     Doctor,
     /// Print a season schedule from Jolpica.
     Schedule { year: u16 },
