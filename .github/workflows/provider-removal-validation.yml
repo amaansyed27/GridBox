@@ -1,0 +1,68 @@
+name: Provider removal validation
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - .github/provider-removal-report.txt
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - name: Validate workspace and removed-provider boundary
+        shell: bash
+        run: |
+          set +e
+          report=.github/provider-removal-report.txt
+          : > "$report"
+          overall=0
+          run_check() {
+            name="$1"
+            shift
+            echo "===== $name =====" >> "$report"
+            "$@" >> "$report" 2>&1
+            code=$?
+            echo "EXIT_CODE=$code" >> "$report"
+            echo >> "$report"
+            if [ "$code" -ne 0 ]; then overall=1; fi
+          }
+          run_check "CARGO FORMAT" cargo fmt --all --check
+          run_check "CARGO CHECK" cargo check --workspace --all-targets
+          run_check "CARGO CLIPPY" cargo clippy --workspace --all-targets -- -D warnings
+          run_check "CARGO TEST" cargo test --workspace
+          run_check "CLI HELP" cargo run -p gridbox-cli -- --help
+          run_check "UV SYNC" uv sync --extra dev
+          run_check "RUFF" uv run ruff check python
+          run_check "PYTEST" uv run pytest
+          echo "===== REMOVED PROVIDER STRING CHECK =====" >> "$report"
+          pattern=$(printf '\157\160\145\156\146\061')
+          if grep -Rni --exclude-dir=.git --exclude-dir=target --exclude-dir=.venv --exclude=provider-removal-validation.yml --exclude=provider-removal-report.txt "$pattern" . >> "$report" 2>&1; then
+            echo "Forbidden provider references remain" >> "$report"
+            echo "EXIT_CODE=1" >> "$report"
+            overall=1
+          else
+            echo "Zero forbidden provider references" >> "$report"
+            echo "EXIT_CODE=0" >> "$report"
+          fi
+          echo "OVERALL_EXIT_CODE=$overall" >> "$report"
+      - name: Commit regenerated lockfile and report
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Cargo.lock .github/provider-removal-report.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "Validate provider removal and refresh lockfile [skip ci]"
+            git push
+          fi
