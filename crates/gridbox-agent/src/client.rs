@@ -80,17 +80,25 @@ impl OllamaAgent {
             content: format!("{SYSTEM_PROMPT}\n\nCURRENT GRIDBOX CONTEXT\n{context}"),
         }];
 
-        messages.extend(history.iter().rev().take(12).rev().filter_map(|message| {
-            let role = match message.role {
-                ChatRole::User => "user",
-                ChatRole::Assistant => "assistant",
-                ChatRole::System | ChatRole::Tool => return None,
-            };
-            Some(ApiMessage {
-                role: role.to_string(),
-                content: message.content.clone(),
-            })
-        }));
+        let prior_history = prior_history(history, user_message);
+        messages.extend(
+            prior_history
+                .iter()
+                .rev()
+                .take(12)
+                .rev()
+                .filter_map(|message| {
+                    let role = match message.role {
+                        ChatRole::User => "user",
+                        ChatRole::Assistant => "assistant",
+                        ChatRole::System | ChatRole::Tool => return None,
+                    };
+                    Some(ApiMessage {
+                        role: role.to_string(),
+                        content: message.content.clone(),
+                    })
+                }),
+        );
         messages.push(ApiMessage {
             role: "user".to_string(),
             content: user_message.to_string(),
@@ -121,6 +129,16 @@ impl OllamaAgent {
     }
 }
 
+fn prior_history<'a>(history: &'a [ChatMessage], user_message: &str) -> &'a [ChatMessage] {
+    if history.last().is_some_and(|message| {
+        message.role == ChatRole::User && message.content == user_message
+    }) {
+        &history[..history.len() - 1]
+    } else {
+        history
+    }
+}
+
 fn model_matches(installed: &str, configured: &str) -> bool {
     installed == configured
         || installed.strip_suffix(":latest") == Some(configured)
@@ -129,11 +147,19 @@ fn model_matches(installed: &str, configured: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::model_matches;
+    use super::{model_matches, prior_history};
+    use gridbox_models::ChatMessage;
 
     #[test]
     fn matches_latest_alias() {
         assert!(model_matches("qwen3:latest", "qwen3"));
         assert!(model_matches("qwen3", "qwen3:latest"));
+    }
+
+    #[test]
+    fn removes_current_question_from_prior_history() {
+        let history = vec![ChatMessage::assistant("Ready"), ChatMessage::user("Compare pace")];
+        let prior = prior_history(&history, "Compare pace");
+        assert_eq!(prior.len(), 1);
     }
 }
