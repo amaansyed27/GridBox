@@ -70,6 +70,14 @@ async fn main() -> Result<()> {
             )
             .await?;
         }
+        Some(Command::DemoLive) => {
+            run_tui(
+                config.clone(),
+                build_services(&config, openf1, jolpica, agent, fastf1, recorder),
+                LaunchMode::Demo,
+            )
+            .await?;
+        }
         None => {
             run_tui(
                 config.clone(),
