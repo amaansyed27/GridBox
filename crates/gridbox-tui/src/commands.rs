@@ -3,8 +3,6 @@ pub enum UserCommand {
     Help,
     Quit,
     Clear,
-    Live,
-    Refresh,
     Model(String),
     Driver(u32),
     Schedule(u16),
@@ -36,8 +34,6 @@ pub fn parse_command(input: &str) -> Result<UserCommand, String> {
         "/help" => Ok(UserCommand::Help),
         "/quit" | "/exit" => Ok(UserCommand::Quit),
         "/clear" => Ok(UserCommand::Clear),
-        "/live" => Ok(UserCommand::Live),
-        "/refresh" => Ok(UserCommand::Refresh),
         "/model" if parts.len() >= 2 => Ok(UserCommand::Model(parts[1..].join(" "))),
         "/driver" if parts.len() == 2 => parts[1]
             .parse()
@@ -77,8 +73,8 @@ mod tests {
     #[test]
     fn plain_text_becomes_ai_question() {
         assert_eq!(
-            parse_command("Who is in the pit window?").unwrap(),
-            UserCommand::Ask("Who is in the pit window?".to_string())
+            parse_command("Who had the fastest final stint?").unwrap(),
+            UserCommand::Ask("Who had the fastest final stint?".to_string())
         );
     }
 
