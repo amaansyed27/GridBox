@@ -130,9 +130,10 @@ impl OllamaAgent {
 }
 
 fn prior_history<'a>(history: &'a [ChatMessage], user_message: &str) -> &'a [ChatMessage] {
-    if history.last().is_some_and(|message| {
-        message.role == ChatRole::User && message.content == user_message
-    }) {
+    if history
+        .last()
+        .is_some_and(|message| message.role == ChatRole::User && message.content == user_message)
+    {
         &history[..history.len() - 1]
     } else {
         history
@@ -158,7 +159,10 @@ mod tests {
 
     #[test]
     fn removes_current_question_from_prior_history() {
-        let history = vec![ChatMessage::assistant("Ready"), ChatMessage::user("Compare pace")];
+        let history = vec![
+            ChatMessage::assistant("Ready"),
+            ChatMessage::user("Compare pace"),
+        ];
         let prior = prior_history(&history, "Compare pace");
         assert_eq!(prior.len(), 1);
     }
