@@ -155,9 +155,10 @@ pub fn render(frame: &mut Frame<'_>, area: Rect, app: &App) {
                 weather
                     .track_temperature
                     .map_or("-".into(), |value| format!("{value:.1}")),
-                weather
-                    .rainfall
-                    .map_or("-".into(), |value| if value { "yes" } else { "no" }.into())
+                weather.rainfall.map_or_else(
+                    || "-".to_string(),
+                    |value| if value { "yes".to_string() } else { "no".to_string() },
+                )
             )
         },
     );
