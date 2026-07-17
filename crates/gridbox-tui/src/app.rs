@@ -2,14 +2,12 @@ use crate::{
     commands::{parse_command, UserCommand},
     events::{AppAction, AppEvent},
 };
-use chrono::Utc;
 use gridbox_models::{ChatMessage, LiveSnapshot, RaceEvent};
 use serde_json::Value;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LaunchMode {
-    Auto,
-    Live,
+    Workspace,
     Demo,
 }
 
@@ -34,7 +32,7 @@ impl Tab {
     pub fn title(self) -> &'static str {
         match self {
             Self::Dashboard => "Dashboard",
-            Self::Live => "Live",
+            Self::Live => "Demo Live",
             Self::History => "History",
             Self::Engineer => "Engineer",
             Self::Help => "Help",
@@ -61,10 +59,10 @@ pub struct App {
 
 impl App {
     pub fn new(launch_mode: LaunchMode, model: impl Into<String>, compact_logo: bool) -> Self {
-        let active_tab = if launch_mode == LaunchMode::Auto {
-            Tab::Dashboard
-        } else {
+        let active_tab = if launch_mode == LaunchMode::Demo {
             Tab::Live
+        } else {
+            Tab::Dashboard
         };
         Self {
             launch_mode,
@@ -78,7 +76,7 @@ impl App {
             live: None,
             schedule: Vec::new(),
             chat: vec![ChatMessage::assistant(
-                "GridBox Engineer is local. Load live data with /live or historical data with /session.",
+                "GridBox Engineer is local. Analyze completed sessions with /session or /compare.",
             )],
             selected_driver: None,
             model: model.into(),
@@ -124,35 +122,14 @@ impl App {
     pub fn apply_event(&mut self, event: AppEvent) {
         self.busy = false;
         match event {
-            AppEvent::LiveLoaded(Ok(snapshot)) => {
-                let is_live = snapshot.session.is_live_at(Utc::now());
-                self.status = if self.launch_mode == LaunchMode::Demo {
-                    format!(
-                        "DEMO LIVE · {} · {} drivers · fully local",
-                        snapshot.session.title(),
-                        snapshot.drivers.len()
-                    )
-                } else if is_live {
-                    format!(
-                        "LIVE · {} · {} drivers · {}",
-                        snapshot.session.title(),
-                        snapshot.drivers.len(),
-                        snapshot.source
-                    )
-                } else {
-                    format!(
-                        "Latest session: {} · currently not active · {}",
-                        snapshot.session.title(),
-                        snapshot.source
-                    )
-                };
+            AppEvent::LiveLoaded(snapshot) => {
+                self.status = format!(
+                    "DEMO LIVE · {} · {} drivers · fully local",
+                    snapshot.session.title(),
+                    snapshot.drivers.len()
+                );
                 self.live = Some(*snapshot);
-                if is_live || self.launch_mode != LaunchMode::Auto {
-                    self.active_tab = Tab::Live;
-                }
-            }
-            AppEvent::LiveLoaded(Err(error)) => {
-                self.status = format!("Live data unavailable: {error}");
+                self.active_tab = Tab::Live;
             }
             AppEvent::AiCompleted(Ok(answer)) => {
                 self.chat.push(ChatMessage::assistant(answer));
@@ -209,17 +186,6 @@ impl App {
                 self.status = "Engineer conversation cleared".to_string();
                 AppAction::None
             }
-            UserCommand::Live | UserCommand::Refresh if self.launch_mode == LaunchMode::Demo => {
-                self.active_tab = Tab::Live;
-                self.status = "Demo live stream runs continuously and needs no refresh".to_string();
-                AppAction::None
-            }
-            UserCommand::Live | UserCommand::Refresh => {
-                self.active_tab = Tab::Live;
-                self.busy = true;
-                self.status = "Refreshing OpenF1…".to_string();
-                AppAction::RefreshLive
-            }
             UserCommand::Model(model) => {
                 self.model = model;
                 self.status = format!("Local model set to {}", self.model);
@@ -227,7 +193,11 @@ impl App {
             }
             UserCommand::Driver(number) => {
                 self.selected_driver = Some(number);
-                self.status = format!("Focused car #{number}");
+                self.status = if self.launch_mode == LaunchMode::Demo {
+                    format!("Focused demo car #{number}")
+                } else {
+                    format!("Driver focus set to car #{number}; start demo-live to view it")
+                };
                 AppAction::None
             }
             UserCommand::Schedule(year) => {
