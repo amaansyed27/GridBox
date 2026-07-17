@@ -12,12 +12,10 @@ path = "src/main.rs"
 
 [dependencies]
 anyhow.workspace = true
-chrono.workspace = true
 clap.workspace = true
 gridbox-agent = { path = "../gridbox-agent" }
 gridbox-fastf1-client = { path = "../gridbox-fastf1-client" }
 gridbox-jolpica = { path = "../gridbox-jolpica" }
-gridbox-openf1 = { path = "../gridbox-openf1" }
 gridbox-storage = { path = "../gridbox-storage" }
 gridbox-tui = { path = "../gridbox-tui" }
 serde_json.workspace = true
