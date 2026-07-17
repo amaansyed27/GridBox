@@ -1,14 +1,8 @@
 use gridbox_agent::OllamaAgent;
 use gridbox_fastf1_client::FastF1Client;
-use gridbox_openf1::OpenF1Client;
 use gridbox_storage::AppPaths;
 
-pub async fn run(
-    paths: &AppPaths,
-    openf1: &OpenF1Client,
-    agent: &OllamaAgent,
-    fastf1: &FastF1Client,
-) -> bool {
+pub async fn run(paths: &AppPaths, agent: &OllamaAgent, fastf1: &FastF1Client) -> bool {
     println!("GridBox doctor\n");
     let mut healthy = true;
 
@@ -17,14 +11,6 @@ pub async fn run(
         Err(error) => {
             healthy = false;
             println!("[fail] local storage: {error}");
-        }
-    }
-
-    match openf1.health().await {
-        Ok(session) => println!("[ok] OpenF1: latest session is {}", session.title()),
-        Err(error) => {
-            healthy = false;
-            println!("[fail] OpenF1: {error}");
         }
     }
 
