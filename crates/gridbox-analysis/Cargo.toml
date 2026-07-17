@@ -1,0 +1,11 @@
+[package]
+name = "gridbox-analysis"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+gridbox-models = { path = "../gridbox-models" }
+serde.workspace = true

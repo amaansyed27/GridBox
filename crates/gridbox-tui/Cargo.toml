@@ -1,0 +1,23 @@
+[package]
+name = "gridbox-tui"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+chrono.workspace = true
+crossterm.workspace = true
+gridbox-agent = { path = "../gridbox-agent" }
+gridbox-analysis = { path = "../gridbox-analysis" }
+gridbox-fastf1-client = { path = "../gridbox-fastf1-client" }
+gridbox-jolpica = { path = "../gridbox-jolpica" }
+gridbox-models = { path = "../gridbox-models" }
+gridbox-openf1 = { path = "../gridbox-openf1" }
+gridbox-storage = { path = "../gridbox-storage" }
+ratatui.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+tracing.workspace = true
