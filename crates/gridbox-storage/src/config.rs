@@ -7,7 +7,6 @@ use std::path::{Path, PathBuf};
 #[serde(default)]
 pub struct Config {
     pub llm: LlmConfig,
-    pub openf1: OpenF1Config,
     pub fastf1: FastF1Config,
     pub ui: UiConfig,
 }
@@ -38,11 +37,6 @@ impl Config {
         if let Ok(value) = std::env::var("GRIDBOX_MODEL") {
             self.llm.model = value;
         }
-        if let Ok(value) = std::env::var("OPENF1_TOKEN") {
-            if !value.trim().is_empty() {
-                self.openf1.token = Some(value);
-            }
-        }
         if let Ok(value) = std::env::var("GRIDBOX_PYTHON") {
             self.fastf1.python_command = value;
         }
@@ -68,28 +62,6 @@ impl Default for LlmConfig {
             provider: "ollama".to_string(),
             base_url: "http://127.0.0.1:11434".to_string(),
             model: "qwen3.5:4b".to_string(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(default)]
-pub struct OpenF1Config {
-    pub base_url: String,
-    pub token: Option<String>,
-    pub poll_interval_secs: u64,
-    pub auto_detect: bool,
-    pub record_live_sessions: bool,
-}
-
-impl Default for OpenF1Config {
-    fn default() -> Self {
-        Self {
-            base_url: "https://api.openf1.org/v1".to_string(),
-            token: None,
-            poll_interval_secs: 5,
-            auto_detect: true,
-            record_live_sessions: true,
         }
     }
 }
