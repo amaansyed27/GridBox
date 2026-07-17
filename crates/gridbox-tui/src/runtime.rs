@@ -10,20 +10,16 @@ use gridbox_agent::OllamaAgent;
 use gridbox_analysis::snapshot_context;
 use gridbox_fastf1_client::FastF1Client;
 use gridbox_jolpica::JolpicaClient;
-use gridbox_openf1::OpenF1Client;
-use gridbox_storage::{Config, LiveRecorder};
+use gridbox_storage::Config;
 use ratatui::{backend::CrosstermBackend, Terminal};
 use std::{io, time::Duration};
-use tokio::{sync::mpsc, task::JoinHandle, time::Instant};
+use tokio::{sync::mpsc, task::JoinHandle};
 
 #[derive(Clone)]
 pub struct AppServices {
-    pub openf1: OpenF1Client,
     pub jolpica: JolpicaClient,
     pub agent: OllamaAgent,
     pub fastf1: FastF1Client,
-    pub recorder: LiveRecorder,
-    pub record_live_sessions: bool,
 }
 
 pub async fn run_tui(config: Config, services: AppServices, mode: LaunchMode) -> Result<()> {
@@ -58,32 +54,15 @@ async fn run_loop(
     let (tx, mut rx) = mpsc::unbounded_channel();
     let mut app = App::new(mode, config.llm.model.clone(), config.ui.compact_logo);
     let tick_rate = Duration::from_millis(config.ui.tick_rate_ms.max(30));
-    let live_poll = Duration::from_secs(config.openf1.poll_interval_secs.max(2));
-    let mut last_live_refresh = Instant::now() - live_poll;
     let demo_task = if mode == LaunchMode::Demo {
         Some(spawn_demo_stream(tx.clone()))
     } else {
         None
     };
 
-    if mode != LaunchMode::Demo && (mode == LaunchMode::Live || config.openf1.auto_detect) {
-        dispatch_action(AppAction::RefreshLive, &app, services.clone(), tx.clone());
-        last_live_refresh = Instant::now();
-    }
-
     while !app.should_quit {
         while let Ok(event) = rx.try_recv() {
             app.apply_event(event);
-        }
-
-        if mode != LaunchMode::Demo
-            && should_auto_refresh(&app, config.openf1.auto_detect)
-            && last_live_refresh.elapsed() >= live_poll
-            && !app.busy
-        {
-            app.busy = true;
-            dispatch_action(AppAction::RefreshLive, &app, services.clone(), tx.clone());
-            last_live_refresh = Instant::now();
         }
 
         terminal.draw(|frame| ui::render(frame, &app))?;
@@ -117,7 +96,7 @@ fn spawn_demo_stream(tx: mpsc::UnboundedSender<AppEvent>) -> JoinHandle<()> {
         loop {
             ticker.tick().await;
             if tx
-                .send(AppEvent::LiveLoaded(Ok(Box::new(demo::snapshot(tick)))))
+                .send(AppEvent::LiveLoaded(Box::new(demo::snapshot(tick))))
                 .is_err()
             {
                 break;
@@ -125,16 +104,6 @@ fn spawn_demo_stream(tx: mpsc::UnboundedSender<AppEvent>) -> JoinHandle<()> {
             tick = tick.wrapping_add(1);
         }
     })
-}
-
-fn should_auto_refresh(app: &App, auto_detect: bool) -> bool {
-    app.launch_mode == LaunchMode::Live
-        || (auto_detect
-            && app
-                .live
-                .as_ref()
-                .map(|snapshot| snapshot.session.is_live_at(chrono::Utc::now()))
-                .unwrap_or(true))
 }
 
 fn handle_key(app: &mut App, key: KeyEvent) -> AppAction {
@@ -177,24 +146,6 @@ fn dispatch_action(
 ) {
     match action {
         AppAction::None | AppAction::Quit => {}
-        AppAction::RefreshLive => {
-            tokio::spawn(async move {
-                let result = services
-                    .openf1
-                    .snapshot_latest()
-                    .await
-                    .map(Box::new)
-                    .map_err(|error| error.to_string());
-                if let Ok(snapshot) = &result {
-                    if services.record_live_sessions
-                        && snapshot.session.is_live_at(chrono::Utc::now())
-                    {
-                        let _ = services.recorder.record_snapshot(snapshot);
-                    }
-                }
-                let _ = tx.send(AppEvent::LiveLoaded(result));
-            });
-        }
         AppAction::AskAi(question) => {
             let history = app.chat.clone();
             let context = snapshot_context(app.live.as_ref(), app.selected_driver);
