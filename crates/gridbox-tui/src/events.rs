@@ -3,7 +3,7 @@ use serde_json::Value;
 
 #[derive(Debug)]
 pub enum AppEvent {
-    LiveLoaded(Result<Box<LiveSnapshot>, String>),
+    LiveLoaded(Box<LiveSnapshot>),
     AiCompleted(Result<String, String>),
     ScheduleLoaded(Result<Vec<RaceEvent>, String>),
     FastF1Completed(Result<Value, String>),
@@ -13,7 +13,6 @@ pub enum AppEvent {
 pub enum AppAction {
     None,
     Quit,
-    RefreshLive,
     AskAi(String),
     LoadSchedule(u16),
     LoadSession {
