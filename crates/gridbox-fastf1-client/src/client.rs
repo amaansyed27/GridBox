@@ -1,10 +1,7 @@
 use crate::{FastF1Request, FastF1Response};
 use anyhow::{anyhow, Context, Result};
 use serde_json::{json, Value};
-use std::{
-    path::{Path, PathBuf},
-    process::Stdio,
-};
+use std::{path::PathBuf, process::Stdio};
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
     process::Command,
@@ -156,10 +153,13 @@ impl FastF1Client {
 }
 
 fn is_uv_command(command: &str) -> bool {
-    Path::new(command)
-        .file_stem()
-        .and_then(|stem| stem.to_str())
-        .is_some_and(|stem| stem.eq_ignore_ascii_case("uv"))
+    let executable = command
+        .rsplit(['/', '\\'])
+        .next()
+        .unwrap_or(command)
+        .strip_suffix(".exe")
+        .unwrap_or_else(|| command.rsplit(['/', '\\']).next().unwrap_or(command));
+    executable.eq_ignore_ascii_case("uv")
 }
 
 #[cfg(test)]
@@ -169,6 +169,7 @@ mod tests {
     #[test]
     fn detects_cross_platform_uv_launchers() {
         assert!(is_uv_command("uv"));
+        assert!(is_uv_command("/usr/local/bin/uv"));
         assert!(is_uv_command("C:\\Tools\\uv.exe"));
         assert!(!is_uv_command("python"));
     }
