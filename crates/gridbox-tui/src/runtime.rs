@@ -156,6 +156,7 @@ fn dispatch_action(
                     .openf1
                     .snapshot_latest()
                     .await
+                    .map(Box::new)
                     .map_err(|error| error.to_string());
                 if let Ok(snapshot) = &result {
                     if services.record_live_sessions
