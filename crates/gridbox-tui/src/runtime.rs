@@ -1,5 +1,6 @@
 use crate::{
     app::{App, LaunchMode, Tab},
+    demo,
     events::{AppAction, AppEvent},
     ui,
 };
@@ -13,7 +14,7 @@ use gridbox_openf1::OpenF1Client;
 use gridbox_storage::{Config, LiveRecorder};
 use ratatui::{backend::CrosstermBackend, Terminal};
 use std::{io, time::Duration};
-use tokio::{sync::mpsc, time::Instant};
+use tokio::{sync::mpsc, task::JoinHandle, time::Instant};
 
 #[derive(Clone)]
 pub struct AppServices {
@@ -59,8 +60,13 @@ async fn run_loop(
     let tick_rate = Duration::from_millis(config.ui.tick_rate_ms.max(30));
     let live_poll = Duration::from_secs(config.openf1.poll_interval_secs.max(2));
     let mut last_live_refresh = Instant::now() - live_poll;
+    let demo_task = if mode == LaunchMode::Demo {
+        Some(spawn_demo_stream(tx.clone()))
+    } else {
+        None
+    };
 
-    if mode == LaunchMode::Live || config.openf1.auto_detect {
+    if mode != LaunchMode::Demo && (mode == LaunchMode::Live || config.openf1.auto_detect) {
         dispatch_action(AppAction::RefreshLive, &app, services.clone(), tx.clone());
         last_live_refresh = Instant::now();
     }
@@ -70,7 +76,8 @@ async fn run_loop(
             app.apply_event(event);
         }
 
-        if should_auto_refresh(&app, config.openf1.auto_detect)
+        if mode != LaunchMode::Demo
+            && should_auto_refresh(&app, config.openf1.auto_detect)
             && last_live_refresh.elapsed() >= live_poll
             && !app.busy
         {
@@ -97,7 +104,27 @@ async fn run_loop(
         }
     }
 
+    if let Some(task) = demo_task {
+        task.abort();
+    }
     Ok(())
+}
+
+fn spawn_demo_stream(tx: mpsc::UnboundedSender<AppEvent>) -> JoinHandle<()> {
+    tokio::spawn(async move {
+        let mut ticker = tokio::time::interval(Duration::from_millis(750));
+        let mut tick = 0_u64;
+        loop {
+            ticker.tick().await;
+            if tx
+                .send(AppEvent::LiveLoaded(Ok(Box::new(demo::snapshot(tick)))))
+                .is_err()
+            {
+                break;
+            }
+            tick = tick.wrapping_add(1);
+        }
+    })
 }
 
 fn should_auto_refresh(app: &App, auto_detect: bool) -> bool {
