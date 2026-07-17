@@ -1,7 +1,10 @@
 use crate::{FastF1Request, FastF1Response};
 use anyhow::{anyhow, Context, Result};
 use serde_json::{json, Value};
-use std::{path::PathBuf, process::Stdio};
+use std::{
+    path::{Path, PathBuf},
+    process::Stdio,
+};
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
     process::Command,
@@ -86,11 +89,8 @@ impl FastF1Client {
         };
         let encoded = serde_json::to_string(&request)?;
 
-        let mut command = Command::new(&self.python_command);
+        let mut command = self.worker_command();
         command
-            .arg("-m")
-            .arg(&self.module)
-            .env("PYTHONPATH", &self.python_root)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
@@ -140,5 +140,36 @@ impl FastF1Client {
             ));
         }
         Ok(response.result)
+    }
+
+    fn worker_command(&self) -> Command {
+        let mut command = Command::new(&self.python_command);
+        if is_uv_command(&self.python_command) {
+            command.arg("run").arg("python");
+        }
+        command
+            .arg("-m")
+            .arg(&self.module)
+            .env("PYTHONPATH", &self.python_root);
+        command
+    }
+}
+
+fn is_uv_command(command: &str) -> bool {
+    Path::new(command)
+        .file_stem()
+        .and_then(|stem| stem.to_str())
+        .is_some_and(|stem| stem.eq_ignore_ascii_case("uv"))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::is_uv_command;
+
+    #[test]
+    fn detects_cross_platform_uv_launchers() {
+        assert!(is_uv_command("uv"));
+        assert!(is_uv_command("C:\\Tools\\uv.exe"));
+        assert!(!is_uv_command("python"));
     }
 }
