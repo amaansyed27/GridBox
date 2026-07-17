@@ -1,0 +1,16 @@
+/target/
+/.venv/
+/.uv-cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.DS_Store
+Thumbs.db
+.env
+config.toml
+*.log
+/gridbox-data/
+/dist/
