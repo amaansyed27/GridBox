@@ -133,7 +133,7 @@ impl App {
                         snapshot.session.title()
                     )
                 };
-                self.live = Some(snapshot);
+                self.live = Some(*snapshot);
                 if is_live || self.launch_mode == LaunchMode::Live {
                     self.active_tab = Tab::Live;
                 }
